@@ -1,0 +1,25 @@
+services:
+  kusto:
+    container_name: kusto
+    hostname: kusto
+    image: mcr.microsoft.com/azuredataexplorer/kustainer-linux
+    volumes: 
+      - kustodata:/kustodata
+    ports:
+      - 8080:8080
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+  # Optional Jupyter service for interactive querying
+  jupyter:
+    container_name: jupyter
+    hostname: jupyter
+    image: jupyter/minimal-notebook:x86_64-python-3.11.6
+    ports:
+      - 8888:8888
+    links:
+      - kusto
+    restart: always
+
+volumes:
+  kustodata:
