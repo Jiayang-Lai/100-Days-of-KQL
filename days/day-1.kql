@@ -1,0 +1,25 @@
+let TestData = externaldata(
+  TenantId:string,
+  SourceSystem:string,
+  TimeGenerated:datetime,
+  Provider:string,
+  Channel:string,
+  Computer:string,
+  Task:int,
+  EventLevel:int,
+  EventLevelName:string,
+  Data:string,
+  EventID:int,
+  ManagementGroupName:string,
+  EventData:dynamic,
+  RawEventData:string,
+  EventOriginId:string,
+  Type:string,
+  _ResourceId:string
+)
+["https://raw.githubusercontent.com/Azure/Azure-Sentinel/refs/heads/master/Sample%20Data/SecurityEvent/SecurityEvent-WindowsFileAuditing-4663.csv"]
+with(format="csv", ignoreFirstRecord=true);
+TestData
+| where EventData.ObjectName == "C:\\Files\\Share\\mtfeYqBI"
+  and EventData.HandleId == "0x1f1c"
+  and EventData.AccessList == "%%4423 \t\t\t\t"
