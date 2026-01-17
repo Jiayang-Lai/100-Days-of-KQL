@@ -1,0 +1,24 @@
+let TestData = externaldata(
+  TenantId:string,
+  SourceSystem:string,
+  TimeGenerated:datetime,
+  Provider:string,
+  Channel:string,
+  Computer:string,
+  Task:int,
+  EventLevel:int,
+  EventLevelName:string,
+  Data:string,
+  EventID:int,
+  ManagementGroupName:string,
+  EventData:dynamic,
+  RawEventData:string,
+  EventOriginId:string,
+  Type:string,
+  _ResourceId:string
+)
+["https://raw.githubusercontent.com/Azure/Azure-Sentinel/refs/heads/master/Sample%20Data/SecurityEvent/SecurityEvent-WindowsFileAuditing-4663.csv"]
+with(format="csv", ignoreFirstRecord=true);
+TestData
+| take 5
+| extend SubjectUserSid=EventData.SubjectUserSid
