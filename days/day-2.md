@@ -4,7 +4,7 @@ Extend is a handy operator that enables the modification of existing columns or 
 
 # Official Document
 
-[extend operator](https://learn.microsoft.com/en-us/kusto/query/where-operator?view=microsoft-fabric)
+[extend operator](https://learn.microsoft.com/en-us/kusto/query/extend-operator?view=microsoft-fabric)
 
 # Note
 
