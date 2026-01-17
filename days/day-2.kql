@@ -1,7 +1,8 @@
 let TestData = externaldata(
   TenantId:string,
   SourceSystem:string,
-  TimeGenerated:datetime,
+  // This column's datetime string is not compatible with KQL datetime data type
+  ["TimeGenerated [UTC]"]:string,
   Provider:string,
   Channel:string,
   Computer:string,
