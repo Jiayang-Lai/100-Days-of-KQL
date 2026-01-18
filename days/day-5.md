@@ -8,4 +8,4 @@ It is not uncommon for tables to have string columns that need parsing, and this
 
 # Note
 
-parse is powerful as it provides various options for parsing strings into structured data. There are two similar operator called parse-where and parse-kv. parse-where is very similar to parse, but it filters out the strings that don't match the pattern. parse-kv is great for parsing key vault pair strings.
+parse is powerful as it provides various options for parsing strings into structured data. There are two similar operators called parse-where and parse-kv. parse-where is very similar to parse, but it filters out the strings that don't match the pattern. parse-kv is great for parsing key vault pair strings.
