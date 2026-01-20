@@ -1,0 +1,12 @@
+let TestData = externaldata(
+  AcademicYear:int,
+  Student:string,
+  House:string,
+  Potion:string,
+  Grade:string,
+  Score:int
+)
+["https://raw.githubusercontent.com/rod-trent/pop-culture-kql-datasets/refs/heads/main/PotionsGrades.csv"]
+with(format="csv", ignoreFirstRecord=true);
+TestData
+| distinct Student
