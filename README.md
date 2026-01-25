@@ -50,3 +50,34 @@ TL;DR: open a new notebook and run this command instead:
 ```
 
 To destroy the environment, run `make down` (you have to specifically remove the volume after this command).
+
+
+# 2026-01-25 Update
+
+## convert_utc_columns.py
+
+When exporting query result from Azure portal, the columns with datetime type will be exported with a name suffix of ` [UTC]` and a non ISO8601 compliant datetime string in a csv file. This causes issues when using `externaldata` to import from this export. (Yes I know it is possible to query and export the data with the ISO8601 datetime string via [azure-monitor-query](https://pypi.org/project/azure-monitor-query/))
+
+Therefore, I wrote a quick script for QoL automation.
+
+Added a utility script `scripts/convert_utc_columns.py` to process CSV files with datetime columns that have `[UTC]` in their column names. The script performs two main operations:
+
+1. **DateTime Conversion**: Converts non-standard datetime formats (e.g., `M/D/YYYY, h:mm:ss.fff AM/PM`) to ISO 8601 format (`YYYY-MM-DDTHH:MM:SS.fffZ`)
+2. **Column Renaming**: Removes the `[UTC]` suffix from column names after conversion
+
+**Usage:**
+```bash
+# Convert with output file
+python3 scripts/convert_utc_columns.py samples/input.csv -o samples/output.csv
+
+# Convert in-place (prompts for confirmation)
+python3 scripts/convert_utc_columns.py samples/input.csv
+```
+
+**Features:**
+- Automatically detects all columns containing `[UTC]` in their names
+- Supports reusable functions for integration with other scripts:
+  - `convert_utc_columns(input_file, output_file)`: File-based conversion
+  - `rename_utc_columns(df)`: In-memory dataframe column renaming
+
+Some sample files come from Tom's repository [here](https://github.com/tom564/100_days_kql_2026/blob/main/Datasets) (thank you Tom!).
