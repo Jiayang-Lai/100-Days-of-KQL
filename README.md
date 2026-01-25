@@ -75,7 +75,7 @@ python3 scripts/convert_utc_columns.py samples/input.csv
 ```
 
 **Features:**
-- Automatically detects all columns containing `[UTC]` in their names
+- Automatically detects all columns containing `[UTC]` (**the space before the square bracket must be removed**) in their names
 - Supports reusable functions for integration with other scripts:
   - `convert_utc_columns(input_file, output_file)`: File-based conversion
   - `rename_utc_columns(df)`: In-memory dataframe column renaming
