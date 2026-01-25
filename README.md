@@ -51,6 +51,11 @@ TL;DR: open a new notebook and run this command instead:
 
 To destroy the environment, run `make down` (you have to specifically remove the volume after this command).
 
+# 2026-01-20 Update
+
+## KqlMagic prettytable Issue and PR
+
+While working on the setup, I discovered that KqlMagic breaks due to breaking changes in the `prettytable` dependency. This causes the `KeyError: 'DEFAULT'` error mentioned in the Setup section. I have submitted a PR to address this issue: [microsoft/jupyter-Kqlmagic#121](https://github.com/microsoft/jupyter-Kqlmagic/pull/121). Until the PR is merged, the workaround of installing an older version of prettytable (`pip install prettytable==3.11.0`) is necessary.
 
 # 2026-01-25 Update
 
