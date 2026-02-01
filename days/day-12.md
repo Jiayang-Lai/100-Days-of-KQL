@@ -1,4 +1,4 @@
-# Day 10
+# Day 12
 
 geo_info_from_ip_address() scalar function helps identify the IP geolocation.
 
