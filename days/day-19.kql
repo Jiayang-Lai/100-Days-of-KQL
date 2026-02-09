@@ -52,5 +52,4 @@ let DemoDeviceNetworkEvents = externaldata(
 ["https://raw.githubusercontent.com/Jiayang-Lai/100-Days-of-KQL/refs/heads/main/samples/DemoDeviceNetworkEvents.csv"]
 with(format="csv", ignoreFirstRecord=true);
 DemoDeviceNetworkEvents
-| take 5
-| extend RowId=new_guid()
+| summarize TotalSize=format_bytes(sum(estimate_data_size(*)))
