@@ -1,5 +1,5 @@
 ## Makefile for managing Docker containers and scripts
-.PHONY: help up down lint lint-fix convert list-targets new-day-%
+.PHONY: help up down lint lint-fix convert list-targets new-day-% next-day n
 
 help: ## Show help message
 	@grep -E '^[a-zA-Z0-9_%\-]+:\s*##' $(MAKEFILE_LIST) | sed 's/:.*##\s*/: /'
@@ -24,3 +24,11 @@ new-day-%: ## Create new day markdown and KQL files (make new-day-<number>)
 	@sed 's/{day_number}/$*/' templates/day.md > days/day-$*.md
 	@touch days/day-$*.kql
 	@echo "Created days/day-$*.md and days/day-$*.kql"
+
+next-day: ## Create next day files (auto-detects the next day number)
+	@next=$$(ls days/day-*.md 2>/dev/null | sed 's/.*day-\([0-9]*\)\.md/\1/' | sort -n | tail -1); \
+	next=$${next:-0}; \
+	next=$$((next + 1)); \
+	$(MAKE) new-day-$$next
+
+n: next-day ##alias next-day
