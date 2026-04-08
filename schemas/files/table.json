@@ -6,6 +6,9 @@
     "table_name": {
       "type": "string"
     },
+    "table_description": {
+      "type": "string"
+    },
     "reference": {
       "type": "string"
     },
@@ -34,6 +37,7 @@
   },
   "required": [
     "table_name",
+    "table_description",
     "reference",
     "columns"
   ]
