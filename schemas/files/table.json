@@ -21,7 +21,19 @@
             "type": "string"
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "bool",
+              "datetime",
+              "decimal",
+              "dynamic",
+              "guid",
+              "int",
+              "long",
+              "real",
+              "string",
+              "timespan"
+            ]
           },
           "description": {
             "type": "string"
