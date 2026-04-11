@@ -1,0 +1,363 @@
+{
+  "$schema": "https://github.com/Jiayang-Lai/100-Days-of-KQL/raw/refs/heads/main/schemas/files/table.json",
+  "table_name": "DeviceEvents",
+  "table_description": "This table is part of Microsoft Defender for Endpoints with Azure Sentinel. This table contains Multiple event types, including events triggered by security controls such as Windows Defender Antivirus and exploit protection.",
+  "reference": "https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/deviceevents",
+  "columns": [
+    {
+      "name": "AccountDomain",
+      "type": "string",
+      "description": "Domain of the account."
+    },
+    {
+      "name": "AccountName",
+      "type": "string",
+      "description": "User name of the account."
+    },
+    {
+      "name": "AccountSid",
+      "type": "string",
+      "description": "Security identifier (SID) of the account."
+    },
+    {
+      "name": "ActionType",
+      "type": "string",
+      "description": "Type of activity that triggered the event."
+    },
+    {
+      "name": "AdditionalFields",
+      "type": "dynamic",
+      "description": "Additional information about the entity or event."
+    },
+    {
+      "name": "AppGuardContainerId",
+      "type": "string",
+      "description": "Identifier for the virtualized container used by Application Guard to isolate browser activity."
+    },
+    {
+      "name": "_BilledSize",
+      "type": "real",
+      "description": "The record size in bytes"
+    },
+    {
+      "name": "CreatedProcessSessionId",
+      "type": "long",
+      "description": "Windows session ID of the created process."
+    },
+    {
+      "name": "DeviceId",
+      "type": "string",
+      "description": "Unique identifier for the device in the service."
+    },
+    {
+      "name": "DeviceName",
+      "type": "string",
+      "description": "Fully qualified domain name (FQDN) of the device."
+    },
+    {
+      "name": "FileName",
+      "type": "string",
+      "description": "Name of the file that the recorded action was applied to."
+    },
+    {
+      "name": "FileOriginIP",
+      "type": "string",
+      "description": "IP address where the file was downloaded from."
+    },
+    {
+      "name": "FileOriginUrl",
+      "type": "string",
+      "description": "URL where the file was downloaded from."
+    },
+    {
+      "name": "FileSize",
+      "type": "long",
+      "description": "Size of the file in bytes."
+    },
+    {
+      "name": "FolderPath",
+      "type": "string",
+      "description": "Folder containing the file that the recorded action was applied to."
+    },
+    {
+      "name": "InitiatingProcessAccountDomain",
+      "type": "string",
+      "description": "Domain of the account that ran the process responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessAccountName",
+      "type": "string",
+      "description": "User name of the account that ran the process responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessAccountObjectId",
+      "type": "string",
+      "description": "Azure AD object ID of the user account that ran the process responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessAccountSid",
+      "type": "string",
+      "description": "Security Identifier (SID) of the account that ran the process responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessAccountUpn",
+      "type": "string",
+      "description": "User principal name (UPN) of the account that ran the process responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessCommandLine",
+      "type": "string",
+      "description": "Command line used to run the process that initiated the event."
+    },
+    {
+      "name": "InitiatingProcessCreationTime",
+      "type": "datetime",
+      "description": "Date and time when the process that initiated the event was started."
+    },
+    {
+      "name": "InitiatingProcessFileName",
+      "type": "string",
+      "description": "Name of the process that initiated the event."
+    },
+    {
+      "name": "InitiatingProcessFileSize",
+      "type": "long",
+      "description": "Size in bytes of the file that ran the process responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessFolderPath",
+      "type": "string",
+      "description": "Folder containing the process (image file) that initiated the event."
+    },
+    {
+      "name": "InitiatingProcessId",
+      "type": "long",
+      "description": "Process ID (PID) of the process that initiated the event."
+    },
+    {
+      "name": "InitiatingProcessLogonId",
+      "type": "long",
+      "description": "Identifier for a logon session of the process that initiated the event. This identifier is unique on the same machine only between restarts."
+    },
+    {
+      "name": "InitiatingProcessMD5",
+      "type": "string",
+      "description": "MD5 hash of the process (image file) that initiated the event."
+    },
+    {
+      "name": "InitiatingProcessParentCreationTime",
+      "type": "datetime",
+      "description": "Date and time when the parent of the process responsible for the event was started."
+    },
+    {
+      "name": "InitiatingProcessParentFileName",
+      "type": "string",
+      "description": "Name of the parent process that spawned the process responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessParentId",
+      "type": "long",
+      "description": "Process ID (PID) of the parent process that spawned the process responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessRemoteSessionDeviceName",
+      "type": "string",
+      "description": "Device name of the remote device from which the initiating process's RDP session was initiated."
+    },
+    {
+      "name": "InitiatingProcessRemoteSessionIP",
+      "type": "string",
+      "description": "IP address of the remote device from which the initiating process's RDP session was initiated."
+    },
+    {
+      "name": "InitiatingProcessSessionId",
+      "type": "long",
+      "description": "Windows session ID of the initiating process."
+    },
+    {
+      "name": "InitiatingProcessSHA1",
+      "type": "string",
+      "description": "SHA-1 hash of the process (image file) that initiated the event."
+    },
+    {
+      "name": "InitiatingProcessSHA256",
+      "type": "string",
+      "description": "SHA-256 hash of the process (image file) that initiated the event. This field is usually not populated - use the SHA1 column when available."
+    },
+    {
+      "name": "InitiatingProcessUniqueId",
+      "type": "string",
+      "description": "Unique identifier of the initiating process; this is equal to the Process Start Key in Windows devices."
+    },
+    {
+      "name": "InitiatingProcessVersionInfoCompanyName",
+      "type": "string",
+      "description": "Company name from the version information of the process (image file) responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessVersionInfoFileDescription",
+      "type": "string",
+      "description": "Description from the version information of the process (image file) responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessVersionInfoInternalFileName",
+      "type": "string",
+      "description": "Internal file name from the version information of the process (image file) responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessVersionInfoOriginalFileName",
+      "type": "string",
+      "description": "Original file name from the version information of the process (image file) responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessVersionInfoProductName",
+      "type": "string",
+      "description": "Product name from the version information of the process (image file) responsible for the event."
+    },
+    {
+      "name": "InitiatingProcessVersionInfoProductVersion",
+      "type": "string",
+      "description": "Product version from the version information of the process (image file) responsible for the event."
+    },
+    {
+      "name": "_IsBillable",
+      "type": "string",
+      "description": "Specifies whether ingesting the data is billable. When _IsBillable is false ingestion isn't billed to your Azure account"
+    },
+    {
+      "name": "IsInitiatingProcessRemoteSession",
+      "type": "bool",
+      "description": "Indicates whether the initiating process was run under a remote desktop protocol (RDP) session (true) or locally (false)."
+    },
+    {
+      "name": "IsProcessRemoteSession",
+      "type": "bool",
+      "description": "Indicates whether the created process was run under a remote desktop protocol (RDP) session (true) or locally (false)."
+    },
+    {
+      "name": "LocalIP",
+      "type": "string",
+      "description": "IP address assigned to the local machine used during communication."
+    },
+    {
+      "name": "LocalPort",
+      "type": "int",
+      "description": "TCP port on the local machine used during communication."
+    },
+    {
+      "name": "LogonId",
+      "type": "long",
+      "description": "Identifier for a logon session. This identifier is unique on the same machine only between restarts."
+    },
+    {
+      "name": "MachineGroup",
+      "type": "string",
+      "description": "Machine group of the machine. This group is used by role-based access control to determine access to the machine."
+    },
+    {
+      "name": "MD5",
+      "type": "string",
+      "description": "MD5 hash of the file that the recorded action was applied to."
+    },
+    {
+      "name": "ProcessCommandLine",
+      "type": "string",
+      "description": "Command line used to create the new process."
+    },
+    {
+      "name": "ProcessCreationTime",
+      "type": "datetime",
+      "description": "Date and time the process was created."
+    },
+    {
+      "name": "ProcessId",
+      "type": "long",
+      "description": "Process ID (PID) of the newly created process."
+    },
+    {
+      "name": "ProcessRemoteSessionDeviceName",
+      "type": "string",
+      "description": "Device name of the remote device from which the created process's RDP session was initiated."
+    },
+    {
+      "name": "ProcessRemoteSessionIP",
+      "type": "string",
+      "description": "IP address of the remote device from which the created process's RDP session was initiated."
+    },
+    {
+      "name": "ProcessTokenElevation",
+      "type": "string",
+      "description": "Token type indicating the presence or absence of User Access Control (UAC) privilege elevation applied to the newly created process."
+    },
+    {
+      "name": "RegistryKey",
+      "type": "string",
+      "description": "Registry key that the recorded action was applied to."
+    },
+    {
+      "name": "RegistryValueData",
+      "type": "string",
+      "description": "Data of the registry value that the recorded action was applied to."
+    },
+    {
+      "name": "RegistryValueName",
+      "type": "string",
+      "description": "Name of the registry value that the recorded action was applied to."
+    },
+    {
+      "name": "RemoteDeviceName",
+      "type": "string",
+      "description": "Name of the device that performed a remote operation on the affected machine. Depending on the event being reported, this name could be a fully-qualified domain name (FQDN), a NetBIOS name, or a host name without domain information.."
+    },
+    {
+      "name": "RemoteIP",
+      "type": "string",
+      "description": "IP address that was being connected to."
+    },
+    {
+      "name": "RemotePort",
+      "type": "int",
+      "description": "TCP port on the remote device that was being connected to."
+    },
+    {
+      "name": "RemoteUrl",
+      "type": "string",
+      "description": "URL or fully qualified domain name (FQDN) that was being connected to."
+    },
+    {
+      "name": "ReportId",
+      "type": "long",
+      "description": "Event identifier based on a repeating counter. To identify unique events, this column must be used in conjunction with the ComputerName and EventTime columns."
+    },
+    {
+      "name": "SHA1",
+      "type": "string",
+      "description": "SHA-1 hash of the file that the recorded action was applied to."
+    },
+    {
+      "name": "SHA256",
+      "type": "string",
+      "description": "SHA-256 of the file that the recorded action was applied to."
+    },
+    {
+      "name": "SourceSystem",
+      "type": "string",
+      "description": "The type of agent the event was collected by. For example, OpsManager for Windows agent, either direct connect or Operations Manager, Linux for all Linux agents, or Azure for Azure Diagnostics"
+    },
+    {
+      "name": "TenantId",
+      "type": "string",
+      "description": "The Log Analytics workspace ID"
+    },
+    {
+      "name": "TimeGenerated",
+      "type": "datetime",
+      "description": "Date and time the event was recorded by the MDE agent on the endpoint."
+    },
+    {
+      "name": "Type",
+      "type": "string",
+      "description": "The name of the table"
+    }
+  ]
+}

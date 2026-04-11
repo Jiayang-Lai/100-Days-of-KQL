@@ -17,7 +17,7 @@ Instead of relying on Actual Sentinel instance or Azure Data Explorer, this proj
 
 I have created a docker compose file based on the one from [Tao of Mac](https://taoofmac.com/space/blog/2024/06/28/2100) (thank you Taoofmac!), with the only change of using a minimal Jupyter notebook image rather than the PyTorch one.
 
-To set up the local environment, simply run command `make up` (please make sure you have make installed), the Kustainer uses a volume for persistent storage but you have to manually load the data after each restart or new Kustainer container creation.
+To set up the local environment, simply run command `make up` (please make sure you have make installed), the Kustainer uses a volume for persistent storage, but you have to manually load the data after each restart or new Kustainer container creation.
 
 After the environment is up and running, run command `docker logs <your Jupyter container id>` to get the access URL with token. Then follow this [guide](https://learn.microsoft.com/en-us/azure-data-studio/notebooks/notebooks-kqlmagic) to install KqlMagic extension for Jupyter notebook. Here is the command (from Tao of Mac) to install KqlMagic and activate it:
 
@@ -33,7 +33,7 @@ To connect to the Kustainer, run this command:
 azureDataExplorer://anonymous;cluster='http://kusto:8080';database='NetDefaultDB';alias='default'
 ```
 
-Vola, your local lab environment is now ready for KQl queries :).
+Vola, your local lab environment is now ready for KQL queries :).
 
 Or is it?
 
@@ -61,7 +61,7 @@ While working on the setup, I discovered that KqlMagic breaks due to breaking ch
 
 ## convert_utc_columns.py
 
-When exporting query result from Azure portal, the columns with datetime type will be exported with a name suffix of ` [UTC]` and a non ISO8601 compliant datetime string in a csv file. This causes issues when using `externaldata` to import from this export. (Yes I know it is possible to query and export the data with the ISO8601 datetime string via [azure-monitor-query](https://pypi.org/project/azure-monitor-query/))
+When exporting query result from Azure portal, the columns with datetime type will be exported with a name suffix of ` [UTC]` and a non ISO8601 compliant datetime string in a CSV file. This causes issues when using `externaldata` to import from this export. (Yes I know it is possible to query and export the data with the ISO8601 datetime string via [azure-monitor-query](https://pypi.org/project/azure-monitor-query/))
 
 Therefore, I wrote a quick script for QoL automation.
 
@@ -86,3 +86,77 @@ python3 scripts/convert_utc_columns.py samples/input.csv
   - `rename_utc_columns(df)`: In-memory dataframe column renaming
 
 Some sample files come from Tom's repository [here](https://github.com/tom564/100_days_kql_2026/blob/main/Datasets) (thank you Tom!).
+
+# 2026-04-10 Update
+
+## generate_kql_query.py
+
+Added an AI-powered KQL query generator that uses an LLM agent with Kusto MCP (Model Context Protocol) tools. The script connects to a local MCP server to access table schemas and generates KQL queries based on natural language requests.
+
+**Features:**
+- Uses Claude (claude-haiku-4-5) with structured output via Pydantic models
+- Automatically discovers available tables and their schemas
+- Returns structured JSON output for automation consumption
+- Supports both interactive mode and single-query mode
+
+**Usage:**
+```bash
+# Single query mode - outputs structured JSON to stdout
+python scripts/generate_kql_query.py "get devices that reached out to 1.1.1.1"
+
+# With verbose AI reasoning output
+python scripts/generate_kql_query.py -v "get 10 windows VMs"
+
+# Interactive mode
+python scripts/generate_kql_query.py
+
+# List available tables
+python scripts/generate_kql_query.py --list-tables
+```
+
+**Output Format:**
+The script returns a `KQLQueryResult` Pydantic model with the following fields:
+```json
+{
+  "request": "get 10 windows VM",
+  "queries": ["DeviceInfo\n| where OSPlatform startswith \"Windows\"\n| limit 10"],
+  "explanation": "This query retrieves 10 Windows devices...",
+  "tables_used": ["DeviceInfo"],
+  "token_usage": {
+    "input_tokens": 5862,
+    "output_tokens": 317,
+    "total_tokens": 6179
+  }
+}
+```
+
+**Output Redirection:**
+- **stdout**: Structured JSON results (for piping/automation)
+- **stderr**: Status messages, token usage, verbose AI output (with `-v`)
+
+**Requirements:**
+- `ANTHROPIC_API_KEY` environment variable set
+- Dependencies: `langchain`, `langchain-anthropic`, `langchain-mcp-adapters`, `pydantic`
+- `kusto-mcp` package (must be built locally, see below)
+
+**Installing kusto-mcp:**
+
+The `kusto-mcp` package is not published to PyPI yet and must be built locally from the sibling [kusto-mcp](https://github.com/Jiayang-Lai/kusto-mcp) repository:
+
+```bash
+# Clone the kusto-mcp repo as a sibling directory
+cd ..
+git clone https://github.com/Jiayang-Lai/kusto-mcp.git
+cd kusto-mcp
+
+git checkout feature/mvp
+
+# Build the wheel
+uv build
+
+# Return to this project and install
+cd ../100-Days-of-KQL
+make install-experimental-packages
+# or manually:
+# pip install ../kusto-mcp/dist/kusto_mcp-0.1.0-py3-none-any.whl
+```

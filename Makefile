@@ -1,5 +1,5 @@
 ## Makefile for managing Docker containers and scripts
-.PHONY: help up down lint lint-fix convert list-targets new-day-% next-day n
+.PHONY: help up down lint lint-fix convert list-targets format new-day-% next-day n install-experimental-packages i install
 
 help: ## Show help message
 	@grep -E '^[a-zA-Z0-9_%\-]+:\s*##' $(MAKEFILE_LIST) | sed 's/:.*##\s*/: /'
@@ -9,6 +9,9 @@ up: ## Start the Docker containers in detached mode
 
 down: ## Stop the Docker containers
 	docker compose -f docker-compose.yml down
+
+format: ## Format the code using black
+	ruff format --config ./scripts/pyproject.toml
 
 lint: ## Run ruff linter on the scripts
 	ruff check --config ./scripts/pyproject.toml
@@ -32,3 +35,12 @@ next-day: ## Create next day files (auto-detects the next day number)
 	$(MAKE) new-day-$$next
 
 n: next-day ##alias next-day
+
+install: ## Install required packages for development
+	pip install -r ./scripts/requirements.txt
+
+install-experimental-packages: ## Install experimental packages (for testing purposes)
+	pip uninstall kusto-mcp -y
+	pip install ../kusto-mcp/dist/kusto_mcp-0.1.0-py3-none-any.whl
+
+i: install-experimental-packages ## alias for install-experimental-packages

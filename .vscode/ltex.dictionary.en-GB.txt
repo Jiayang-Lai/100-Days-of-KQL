@@ -1,0 +1,16 @@
+Kustainer
+Kusto
+Taoofmac
+KqlMagic
+Vola
+prettytable
+microsoft
+jupyter-Kqlmagic
+datetime
+QoL
+DateTime
+dataframe
+kql
+Pydantic
+PyPI
+kusto-mcp

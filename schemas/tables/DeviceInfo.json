@@ -1,0 +1,243 @@
+{
+  "$schema": "https://github.com/Jiayang-Lai/100-Days-of-KQL/raw/refs/heads/main/schemas/files/table.json",
+  "table_name": "DeviceInfo",
+  "table_description": "This table is part of Microsoft Defender for Endpoints with Azure Sentinel. This table contains Machine information, including OS information.",
+  "reference": "https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/deviceinfo",
+  "columns": [
+    {
+      "name": "AdditionalFields",
+      "type": "dynamic",
+      "description": "Additional information about the entity or event."
+    },
+    {
+      "name": "ClientVersion",
+      "type": "string",
+      "description": "Version of the endpoint agent or sensor running on the machine."
+    },
+    {
+      "name": "DeviceId",
+      "type": "string",
+      "description": "Unique identifier for the device in the service."
+    },
+    {
+      "name": "DeviceName",
+      "type": "string",
+      "description": "Fully qualified domain name (FQDN) of the device."
+    },
+    {
+      "name": "DeviceObjectId",
+      "type": "string",
+      "description": "Unique identifier for the device in Azure AD."
+    },
+    {
+      "name": "IsAzureADJoined",
+      "type": "bool",
+      "description": "Boolean indicator of whether machine is joined to the Azure Active Directory."
+    },
+    {
+      "name": "LoggedOnUsers",
+      "type": "dynamic",
+      "description": "List of all users that are logged on the machine at the time of the event in JSON array format."
+    },
+    {
+      "name": "MachineGroup",
+      "type": "string",
+      "description": "Machine group used to determine access to the machine and apply group-specific settings."
+    },
+    {
+      "name": "OSArchitecture",
+      "type": "string",
+      "description": "Architecture of the operating system running on the machine."
+    },
+    {
+      "name": "OSBuild",
+      "type": "long",
+      "description": "Build version of the operating system running on the machine."
+    },
+    {
+      "name": "OSPlatform",
+      "type": "string",
+      "description": "Platform of the operating system running on the machine. This indicates specific operating systems, including variations within the same family, such as Windows 10 and Windows 7."
+    },
+    {
+      "name": "OSVersion",
+      "type": "string",
+      "description": "Version of the operating system running on the machine."
+    },
+    {
+      "name": "RegistryDeviceTag",
+      "type": "string",
+      "description": "Device tag added through the registry."
+    },
+    {
+      "name": "ReportId",
+      "type": "long",
+      "description": "Event identifier based on a repeating counter. To identify unique events, this column must be used in conjunction with the ComputerName and EventTime columns."
+    },
+    {
+      "name": "TimeGenerated",
+      "type": "datetime",
+      "description": "Date and time the event was recorded by the MDE agent on the endpoint."
+    },
+    {
+      "name": "Timestamp",
+      "type": "datetime",
+      "description": "Date and time when the record was generated."
+    },
+    {
+      "name": "AadDeviceId",
+      "type": "string",
+      "description": "Unique identifier for the device in Azure Active Directory."
+    },
+    {
+      "name": "DeviceCategory",
+      "type": "string",
+      "description": "Broader classification that groups certain device types under the following categories: Endpoint, Network device, IoT, Unknown."
+    },
+    {
+      "name": "DeviceSubtype",
+      "type": "string",
+      "description": "Additional modifier for certain types of devices, for example, a mobile device can be a tablet or a smartphone; only available if device discovery finds enough information about this attribute."
+    },
+    {
+      "name": "DeviceType",
+      "type": "string",
+      "description": "Type of device based on purpose and functionality, such as network device, workstation, server, mobile, gaming console, or printer."
+    },
+    {
+      "name": "JoinType",
+      "type": "string",
+      "description": "The device's Azure Active Directory join type."
+    },
+    {
+      "name": "MergedDeviceIds",
+      "type": "string",
+      "description": "Previous device IDs that have been assigned to the same device."
+    },
+    {
+      "name": "MergedToDeviceId",
+      "type": "string",
+      "description": "The most recent device ID assigned to a device."
+    },
+    {
+      "name": "Model",
+      "type": "string",
+      "description": "Model name or number of the product from the vendor or manufacturer, only available if device discovery finds enough information about this attribute."
+    },
+    {
+      "name": "OnboardingStatus",
+      "type": "string",
+      "description": "Indicates whether the device is currently onboarded or not to Microsoft Defender for Endpoint or if the device is not supported."
+    },
+    {
+      "name": "OSDistribution",
+      "type": "string",
+      "description": "Distribution of the OS platform, such as Ubuntu or RedHat for Linux platforms."
+    },
+    {
+      "name": "OSVersionInfo",
+      "type": "string",
+      "description": "Additional information about the OS version, such as the popular name, code name, or version number."
+    },
+    {
+      "name": "Vendor",
+      "type": "string",
+      "description": "Name of the product vendor or manufacturer, only available if device discovery finds enough information about this attribute."
+    },
+    {
+      "name": "SensorHealthState",
+      "type": "string",
+      "description": "Indicates health of the device's EDR sensor, if onboarded to Microsoft Defender For Endpoint."
+    },
+    {
+      "name": "IsExcluded",
+      "type": "bool",
+      "description": "Determines if the device is currently excluded from Microsoft Defender for Vulnerability Management experiences."
+    },
+    {
+      "name": "ExclusionReason",
+      "type": "string",
+      "description": "Indicates the reason for device exclusion."
+    },
+    {
+      "name": "AssetValue",
+      "type": "string",
+      "description": "Indicates the value of a device as assigned by the user."
+    },
+    {
+      "name": "ExposureLevel",
+      "type": "string",
+      "description": "Indicates the exposure level of a device."
+    },
+    {
+      "name": "IsInternetFacing",
+      "type": "bool",
+      "description": "Indicates whether the device is internet-facing."
+    },
+    {
+      "name": "DeviceManualTags",
+      "type": "string",
+      "description": "Device tags created manually using the portal UI or public API."
+    },
+    {
+      "name": "DeviceDynamicTags",
+      "type": "string",
+      "description": "Device tags added and removed dynamically based on dynamic rules."
+    },
+    {
+      "name": "AwsResourceName",
+      "type": "string",
+      "description": "Unique identifier of the AWS resource associated with the device."
+    },
+    {
+      "name": "GcpFullResourceName",
+      "type": "string",
+      "description": "Unique identifier of the GCP resource associated with the device."
+    },
+    {
+      "name": "CloudPlatforms",
+      "type": "string",
+      "description": "The cloud platforms that the device belongs to - can be Azure, Amazon Web Services, Google Cloud Platform and Azure Arc."
+    },
+    {
+      "name": "HardwareUuid",
+      "type": "string",
+      "description": "Universally Unique Identifier (UUID) of the device's hardware."
+    },
+    {
+      "name": "HostDeviceId",
+      "type": "string",
+      "description": "Device ID of the device running Windows Subsystem for Linux."
+    },
+    {
+      "name": "IsTransient",
+      "type": "bool",
+      "description": "Indicates whether this device is classified as short-lived or transient based on the frequency of appearance of the device on the network."
+    },
+    {
+      "name": "MitigationStatus",
+      "type": "string",
+      "description": "Indicates the mitigation action applied to a device."
+    },
+    {
+      "name": "OsBuildRevision",
+      "type": "string",
+      "description": "Build revision number of the operating system running on the machine."
+    },
+    {
+      "name": "RestrictedDeviceSecurityOperations",
+      "type": "string",
+      "description": "The response categories that have been turned off on a device if its security operations settings is set to restricted. If the device's security operations settings is set to full operations, the value is null."
+    },
+    {
+      "name": "SourceSystem",
+      "type": "string",
+      "description": "The type of agent the event was collected by. For example, OpsManager for Windows agent, either direct connect or Operations Manager, Linux for all Linux agents, or Azure for Azure Diagnostics."
+    },
+    {
+      "name": "Type",
+      "type": "string",
+      "description": "The name of the table."
+    }
+  ]
+}
