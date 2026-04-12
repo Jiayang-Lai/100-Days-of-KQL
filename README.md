@@ -141,7 +141,9 @@ The script returns a `KQLQueryResult` Pydantic model with the following fields:
 
 **Installing kusto-mcp:**
 
-The `kusto-mcp` package is not published to PyPI yet and must be built locally from the sibling [kusto-mcp](https://github.com/Jiayang-Lai/kusto-mcp) repository:
+The `kusto-mcp` package is now published to PyPI, so by simply running `make install` the package will be installed.
+
+But if you still wish to build the package locally from the sibling [kusto-mcp](https://github.com/Jiayang-Lai/kusto-mcp) repository here is the snippet to do so:
 
 ```bash
 # Clone the kusto-mcp repo as a sibling directory

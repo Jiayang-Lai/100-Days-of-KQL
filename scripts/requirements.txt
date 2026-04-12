@@ -4,3 +4,4 @@ langchain-anthropic==1.4.0
 python-dotenv==1.2.2
 langchain-mcp-adapters==0.2.2
 pydantic==2.12.5
+kusto-mcp==0.1.1
