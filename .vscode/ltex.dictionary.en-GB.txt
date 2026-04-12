@@ -14,3 +14,4 @@ kql
 Pydantic
 PyPI
 kusto-mcp
+utc
