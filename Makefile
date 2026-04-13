@@ -41,6 +41,6 @@ install: ## Install required packages for development
 
 install-experimental-packages: ## Install experimental packages (for testing purposes)
 	pip uninstall kusto-mcp -y
-	pip install ../kusto-mcp/dist/kusto_mcp-0.1.0-py3-none-any.whl
+	pip install ../kusto-mcp/dist/kusto_mcp-*-py3-none-any.whl
 
 i: install-experimental-packages ## alias for install-experimental-packages
