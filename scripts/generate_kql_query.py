@@ -180,7 +180,30 @@ def main() -> None:
     action="store_true",
     help="Print verbose AI messages to stderr",
   )
+  parser.add_argument(
+    "-p",
+    "--prompt-file",
+    dest="prompt_file",
+    type=Path,
+    help="Read the prompt/request from a file and use it as the query",
+  )
   args = parser.parse_args()
+
+  # If a prompt file was provided, read it and use its contents as the query.
+  if getattr(args, "prompt_file", None):
+    try:
+      if not args.prompt_file.exists():
+        print(f"Prompt file not found: {args.prompt_file}", file=sys.stderr)
+        sys.exit(2)
+      prompt_text = args.prompt_file.read_text(encoding="utf-8").strip()
+      if not prompt_text:
+        print(f"Prompt file is empty: {args.prompt_file}", file=sys.stderr)
+        sys.exit(2)
+      # Prompt file takes precedence over positional query argument
+      args.query = prompt_text
+    except Exception as e:
+      print(f"Failed to read prompt file: {e}", file=sys.stderr)
+      sys.exit(2)
 
   asyncio.run(async_main(args))
 

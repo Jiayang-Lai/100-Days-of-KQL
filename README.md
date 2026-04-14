@@ -114,6 +114,19 @@ python scripts/generate_kql_query.py
 python scripts/generate_kql_query.py --list-tables
 ```
 
+Additional usage:
+
+```bash
+# Read the prompt/request from a file (takes precedence over the positional query)
+python scripts/generate_kql_query.py --prompt-file days/day-25.prompt.md
+# Short flag
+python scripts/generate_kql_query.py -p days/day-25.prompt.md
+```
+
+Notes:
+- If `--prompt-file` is provided, its contents are used as the query request and override the positional `query` argument.
+- The script prints structured JSON to stdout and diagnostic/verbose output to stderr (use `-v` for verbose AI reasoning).
+
 **Output Format:**
 The script returns a `KQLQueryResult` Pydantic model with the following fields:
 ```json
