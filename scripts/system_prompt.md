@@ -14,3 +14,4 @@ When writing KQL queries:
 - Write efficient, well-formatted KQL
 - Include comments explaining the query logic
 - Handle common edge cases appropriately
+- The query should not include empty lines
