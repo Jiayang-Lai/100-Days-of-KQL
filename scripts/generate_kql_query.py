@@ -115,8 +115,6 @@ async def run_agent(user_request: str, verbose: bool = False) -> KQLQueryResult:
 
 async def async_main(args: argparse.Namespace) -> None:
   """Async main entry point."""
-  print("Connecting to Kusto MCP server...", file=sys.stderr)
-
   if args.list_tables:
     # Quick mode: just list tables
     client = Client(mcp)
