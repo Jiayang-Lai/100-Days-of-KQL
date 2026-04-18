@@ -175,3 +175,14 @@ make install-experimental-packages
 # or manually:
 # pip install ../kusto-mcp/dist/kusto_mcp-0.1.0-py3-none-any.whl
 ```
+
+# To-dos
+
+- [ ] Provide KQL operator and function usage/syntax as tool within kusto-mcp.
+- [ ] Expose local file through another container within the same docker network to enable rapid iteration of test log (compared to committing to remote repository).
+  - [ ] Use caddy to expose the mounted directory within the docker network.
+  - [ ] Load custom config (quite sure there would be a container)
+- [ ] Create an agent harness to fully automate the process of generating KQL query.
+  - [ ] Provide system prompt and initial message.
+  - [ ] Provide agent with access to run query within Kustainer.
+  - [ ] Implement loop mechanism to give agent autonomy to generate and improve query to meet requirements.

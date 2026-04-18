@@ -47,5 +47,5 @@ install-experimental-packages: ## Install experimental packages (for testing pur
 
 i: install-experimental-packages ## alias for install-experimental-packages
 
-ai-time-%: ## Run the AI time script
+ai-time-%: ## Run the AI time script to generate KQL query based on the prompt of the specified day
 	python scripts/generate_kql_query.py --prompt-file days/day-$*.prompt.md
