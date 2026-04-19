@@ -1,0 +1,5 @@
+.show queries
+| where State == "Failed" and isnotempty(FailureReason)
+| sort by LastUpdatedOn desc
+| take 5
+| project StartedOn, LastUpdatedOn, Duration, State, FailureReason, Text, User, Database, TotalCpu, MemoryPeak, Application

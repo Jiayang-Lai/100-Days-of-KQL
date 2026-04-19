@@ -17,7 +17,7 @@ Instead of relying on Actual Sentinel instance or Azure Data Explorer, this proj
 
 I have created a docker compose file based on the one from [Tao of Mac](https://taoofmac.com/space/blog/2024/06/28/2100) (thank you Taoofmac!), with the only change of using a minimal Jupyter notebook image rather than the PyTorch one.
 
-To set up the local environment, simply run command `make up` (please make sure you have make installed), the Kustainer uses a volume for persistent storage, but you have to manually load the data after each restart or new Kustainer container creation.
+To set up the local environment, simply run command `make up trust` (please make sure you have make installed), the Kustainer uses a volume for persistent storage, but you have to manually load the data after each restart or new Kustainer container creation.
 
 After the environment is up and running, run command `docker logs <your Jupyter container id>` to get the access URL with token. Then follow this [guide](https://learn.microsoft.com/en-us/azure-data-studio/notebooks/notebooks-kqlmagic) to install KqlMagic extension for Jupyter notebook. Here is the command (from Tao of Mac) to install KqlMagic and activate it:
 
@@ -179,10 +179,19 @@ make install-experimental-packages
 # To-dos
 
 - [ ] Provide KQL operator and function usage/syntax as tool within kusto-mcp.
-- [ ] Expose local file through another container within the same docker network to enable rapid iteration of test log (compared to committing to remote repository).
-  - [ ] Use caddy to expose the mounted directory within the docker network.
-  - [ ] Load custom config (quite sure there would be a container)
+- [X] Expose local file through another container within the same docker network to enable rapid iteration of test log (compared to committing to remote repository).
+  - [X] Use caddy to expose the mounted directory within the docker network.
+  - [X] Load custom config (quite sure there would be a container)
 - [ ] Create an agent harness to fully automate the process of generating KQL query.
   - [ ] Provide system prompt and initial message.
   - [ ] Provide agent with access to run query within Kustainer.
   - [ ] Implement loop mechanism to give agent autonomy to generate and improve query to meet requirements.
+
+# 2026-04-19 Update
+
+## Summary of changes
+
+- **Jupyter notebook persistency & starter notebook**: Jupyter data and sessions are now persisted through the project's Docker volumes so notebooks survive container restarts. A lightweight starter notebook has been added for quick onboarding: [docker/jupyter/workbench.ipynb](docker/jupyter/workbench.ipynb). Use this notebook to quickly connect to the local Kustainer instance and try example queries.
+- **docker compose networking refactor**: The docker compose setup has been refactored to create a dedicated internal network for service-to-service communication. This makes it easier for Kustainer to retrieve data from other local services (for example the local file server) without exposing those services publicly.
+- **Caddy introduced as local file server for Kustainer**: A Caddy container is included and configured to serve mounted files within the same docker network (see [docker/caddy/Caddyfile](docker/caddy/Caddyfile)). Kustainer can now access local sample data and schema files over HTTPS which simplifies testing `externaldata` and related workflows. You can now access the web GUI of the file server [here](https://localhost:4433/).
+- **New Make target: `trust`**: A new make target `trust` was added to streamline enabling TLS-based file retrieval. Run `make trust` to append the Caddy CA certificate into the Kustainer container's trust store so Kustainer trusts the local Caddy HTTPS endpoint. This avoids manual certificate installation and enables secure `https://` access to local files from within the cluster.

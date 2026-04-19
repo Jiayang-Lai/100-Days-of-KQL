@@ -1,0 +1,17 @@
+caddy:443 {
+  file_server {
+    browse
+    root /srv
+  }
+  root /srv
+  tls internal
+}
+
+localhost {
+  file_server {
+    browse
+    root /srv
+  }
+  root /srv
+  tls internal
+}

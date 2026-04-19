@@ -208,3 +208,6 @@ __marimo__/
 
 # .ignore.
 *.ignore.*
+
+# Ignore kqlmagic temp files
+docker/jupyter/kqlmagic

@@ -1,11 +1,15 @@
 ## Makefile for managing Docker containers and scripts
-.PHONY: help up down lint lint-fix convert list-targets format new-day-% next-day n install-experimental-packages i install
+.PHONY: help up down lint lint-fix convert list-targets format new-day-% next-day n install-experimental-packages i install trust ai-time-%
 
 help: ## Show help message
 	@grep -E '^[a-zA-Z0-9_%\-]+:\s*##' $(MAKEFILE_LIST) | sed 's/:.*##\s*/: /'
 
 up: ## Start the Docker containers in detached mode
 	docker compose -f docker-compose.yml up -d
+
+trust: ## Get the generated local CA certificate from caddy and add it to the Kustainer container's trusted certificates
+	docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt ./docker/kustainer/root.ignore.crt
+	docker exec kusto sh -c "cat /kustainer_cert/root.ignore.crt >> /etc/ssl/certs/ca-certificates.crt"
 
 down: ## Stop the Docker containers
 	docker compose -f docker-compose.yml down
@@ -49,3 +53,4 @@ i: install-experimental-packages ## alias for install-experimental-packages
 
 ai-time-%: ## Run the AI time script to generate KQL query based on the prompt of the specified day
 	python scripts/generate_kql_query.py --prompt-file days/day-$*.prompt.md
+

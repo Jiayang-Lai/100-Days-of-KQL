@@ -5,8 +5,11 @@ services:
     image: mcr.microsoft.com/azuredataexplorer/kustainer-linux
     volumes: 
       - kustodata:/kustodata
+      - kustainer_cert:/kustainer_cert
     ports:
-      - 8080:8080
+      - 127.0.0.1:8080:8080
+    networks:
+      - kusto_network
     restart: always
     environment:
       - ACCEPT_EULA=Y
@@ -15,11 +18,54 @@ services:
     container_name: jupyter
     hostname: jupyter
     image: jupyter/minimal-notebook:x86_64-python-3.11.6
+    volumes:
+      - jupyter_data:/home/jovyan/100-days-of-kql
     ports:
-      - 8888:8888
-    links:
-      - kusto
+      - 127.0.0.1:8888:8888
+    networks:
+      - kusto_network
+    restart: always
+  caddy:
+    container_name: caddy
+    hostname: localfiles
+    image: caddy:2.11.2-alpine
+    volumes:
+      - caddy_config:/etc/caddy
+      - caddy_data:/srv
+    ports:
+      - 127.0.0.1:4433:443
+    networks:
+      - kusto_network
     restart: always
 
 volumes:
   kustodata:
+  kustainer_cert:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './docker/kustainer/'
+  caddy_config:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './docker/caddy/'
+  caddy_data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './samples/'
+  jupyter_data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './docker/jupyter/'
+
+networks:
+  kusto_network:
+    driver: bridge
+    name: kusto_workspace

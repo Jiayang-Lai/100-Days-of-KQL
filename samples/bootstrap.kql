@@ -62,7 +62,7 @@ let DeviceFileEvents = externaldata(
     SourceSystem:string,
     Type:string
 )
-["http://raw.githubusercontent.com/Jiayang-Lai/100-Days-of-KQL/refs/heads/main/samples/DemoDeviceFileEvents.csv"]
+["https://raw.githubusercontent.com/Jiayang-Lai/100-Days-of-KQL/refs/heads/main/samples/DemoDeviceFileEvents.csv"]
 with(format="csv", ignoreFirstRecord=true);
 let DeviceEvents = externaldata(
     AccountDomain:string,
