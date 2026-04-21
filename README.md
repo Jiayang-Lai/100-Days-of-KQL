@@ -191,6 +191,7 @@ make install-experimental-packages
 - [X] Expose local file through another container within the same docker network to enable rapid iteration of test log (compared to committing to remote repository).
   - [X] Use caddy to expose the mounted directory within the docker network.
   - [X] Load custom config (quite sure there would be a container)
+- [ ] Create function for agent to run query against local Kustainer and get return.
 - [ ] Create an agent harness to fully automate the process of generating KQL query.
   - [ ] Provide system prompt and initial message.
   - [ ] Provide agent with access to run query within Kustainer.

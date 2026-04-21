@@ -1,0 +1,24 @@
+union
+(DeviceNetworkEvents
+| where RemoteUrl in ("sfrclak.com", "http://sfrclak.com:8000/6202033")
+or RemoteIP == "142.11.206.73"
+or RemotePort == 8000
+| project TimeGenerated, DeviceName, RemoteUrl, RemoteIP, RemotePort, InitiatingProcessFileName, InitiatingProcessCommandLine, Type="NetworkIOC"),
+(DeviceFileEvents
+| where FolderPath in ("%TEMP%", "%PROGRAMDATA%", "C:\\ProgramData")
+and FileName in ("6202033.vbs", "6202033.ps1", "system.bat", "wt.exe")
+or SHA256 in ("ed8560c1ac7ceb6983ba995124d5917dc1a00288912387a6389296637d5f815c",
+"617b67a8e1210e4fc87c92d1d1da45a2f311c08d26e89b12307cf583c900d101",
+"f7d335205b8d7b20208fb3ef93ee6dc817905dc3ae0c10a0b164f4e7d07121cd",
+"92ff08773995ebc8d55ec4b8e1a225d0d1e51efa4ef88b8849d0071230c9645a",
+"fcb81618bb15edfdedfb638b4c08a2af9cac9ecfa551af135a8402bf980375cf")
+| project TimeGenerated, DeviceName, FileName, FolderPath, SHA256, InitiatingProcessFileName, InitiatingProcessCommandLine, Type="FileIOC"),
+(DeviceProcessEvents
+| where ProcessCommandLine contains "packages.npm.org/product0"
+or ProcessCommandLine contains "packages.npm.org/product1"
+or InitiatingProcessCommandLine contains "packages.npm.org/product0"
+or InitiatingProcessCommandLine contains "packages.npm.org/product1"
+or FolderPath in ("/Library/Caches", "/tmp")
+and FileName in ("com.apple.act.mond", "ld.py")
+| project TimeGenerated, DeviceName, FileName, FolderPath, ProcessCommandLine, InitiatingProcessCommandLine, InitiatingProcessFileName, Type="ProcessIOC")
+| sort by TimeGenerated desc

@@ -1,0 +1,17 @@
+Generate a KQL query to find Axios compromise IOCs that match the criteria from the following table:
+
+| Indicator                          | Type                       | Description                                                                                                                                                                           |
+| ---------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sfrclak[.]com                      | C2 domain                  | Resolves to 142.11.206[.]73.Registrar: NameCheap, Inc                                                                                                                                 |
+| 142.11.206[.]73                    | C2 IP                      | Sapphire Sleet C2 IP.Port 8000, HTTP                                                                                                                                                  |
+| hxxp://sfrclak[.]com:8000/6202033  | C2 URL                     | Static path across all variants                                                                                                                                                       |
+| %TEMP%\6202033.vbs                 | Windows VBScript dropper   | Created by node setup.js                                                                                                                                                              |
+| %TEMP%\6202033.ps1                 | Windows PowerShell payload | Downloaded from C2, self-deleting SHA-256: ed8560c1ac7ceb6983ba995124d5917dc1a00288912387a6389296637d5f815c SHA-256: 617b67a8e1210e4fc87c92d1d1da45a2f311c08d26e89b12307cf583c900d101 |
+| %PROGRAMDATA%\system.bat           | File created by PowerShell | SHA-256: f7d335205b8d7b20208fb3ef93ee6dc817905dc3ae0c10a0b164f4e7d07121cd                                                                                                             |
+| C:\ProgramData\wt.exe              | Windows LOLBin             | Windows Terminal copy, used as PowerShell proxy                                                                                                                                       |
+| /Library/Caches/com.apple.act.mond | macOS binary               | SHA-256: 92ff08773995ebc8d55ec4b8e1a225d0d1e51efa4ef88b8849d0071230c9645a                                                                                                             |
+| /tmp/ld.py                         | Linux loader               | SHA-256: fcb81618bb15edfdedfb638b4c08a2af9cac9ecfa551af135a8402bf980375cf                                                                                                             |
+| packages.npm.org/product1          | npm identifier (Windows)   | Sent as POST body to C2                                                                                                                                                               |
+| packages.npm.org/product0          | npm identifier (macOS)     | Sent as POST body to C2                                                                                                                                                               |
+
+Some of the indicators values are defanged (e.g., Sfrclak[.]com) to prevent accidental clicks. Convert them back to their original form in the query (e.g., Sfrclak.com).
