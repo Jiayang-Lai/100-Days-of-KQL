@@ -176,6 +176,15 @@ make install-experimental-packages
 # pip install ../kusto-mcp/dist/kusto_mcp-0.1.0-py3-none-any.whl
 ```
 
+# 2026-04-19 Update
+
+## Summary of changes
+
+- **Jupyter notebook persistency & starter notebook**: Jupyter data and sessions are now persisted through the project's Docker volumes so notebooks survive container restarts. A lightweight starter notebook has been added for quick onboarding: [docker/jupyter/workbench.ipynb](docker/jupyter/workbench.ipynb). Use this notebook to quickly connect to the local Kustainer instance and try example queries.
+- **docker compose networking refactor**: The docker compose setup has been refactored to create a dedicated internal network for service-to-service communication. This makes it easier for Kustainer to retrieve data from other local services (for example the local file server) without exposing those services publicly.
+- **Caddy introduced as local file server for Kustainer**: A Caddy container is included and configured to serve mounted files within the same docker network (see [docker/caddy/Caddyfile](docker/caddy/Caddyfile)). Kustainer can now access local sample data and schema files over HTTPS which simplifies testing `externaldata` and related workflows. You can now access the web GUI of the file server [here](https://localhost:4433/).
+- **New Make target: `trust`**: A new make target `trust` was added to streamline enabling TLS-based file retrieval. Run `make trust` to append the Caddy CA certificate into the Kustainer container's trust store so Kustainer trusts the local Caddy HTTPS endpoint. This avoids manual certificate installation and enables secure `https://` access to local files from within the cluster.
+
 # To-dos
 
 - [ ] Provide KQL operator and function usage/syntax as tool within kusto-mcp.
@@ -186,12 +195,3 @@ make install-experimental-packages
   - [ ] Provide system prompt and initial message.
   - [ ] Provide agent with access to run query within Kustainer.
   - [ ] Implement loop mechanism to give agent autonomy to generate and improve query to meet requirements.
-
-# 2026-04-19 Update
-
-## Summary of changes
-
-- **Jupyter notebook persistency & starter notebook**: Jupyter data and sessions are now persisted through the project's Docker volumes so notebooks survive container restarts. A lightweight starter notebook has been added for quick onboarding: [docker/jupyter/workbench.ipynb](docker/jupyter/workbench.ipynb). Use this notebook to quickly connect to the local Kustainer instance and try example queries.
-- **docker compose networking refactor**: The docker compose setup has been refactored to create a dedicated internal network for service-to-service communication. This makes it easier for Kustainer to retrieve data from other local services (for example the local file server) without exposing those services publicly.
-- **Caddy introduced as local file server for Kustainer**: A Caddy container is included and configured to serve mounted files within the same docker network (see [docker/caddy/Caddyfile](docker/caddy/Caddyfile)). Kustainer can now access local sample data and schema files over HTTPS which simplifies testing `externaldata` and related workflows. You can now access the web GUI of the file server [here](https://localhost:4433/).
-- **New Make target: `trust`**: A new make target `trust` was added to streamline enabling TLS-based file retrieval. Run `make trust` to append the Caddy CA certificate into the Kustainer container's trust store so Kustainer trusts the local Caddy HTTPS endpoint. This avoids manual certificate installation and enables secure `https://` access to local files from within the cluster.
