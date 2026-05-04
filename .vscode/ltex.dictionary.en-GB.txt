@@ -15,3 +15,8 @@ Pydantic
 PyPI
 kusto-mcp
 utc
+Trivy
+Axios
+KQL-based
+entrypoint
+Kustainer-related

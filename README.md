@@ -1,13 +1,36 @@
 # Introduction
 
-This repository holds the dataset and the queries created for the 100 days of KQL challenge.
+This repository documents my 100 Days of KQL challenge work, including daily Kusto Query Language exercises, supporting notes, sample telemetry, and the tooling built around the project. In addition to the query content itself, the repository includes a local Docker-based lab environment powered by Kustainer, Jupyter, and Caddy for reproducible testing, along with an AI-assisted workflow that uses a local MCP server and schema-aware tooling to generate KQL queries from natural language prompts.
 
 # Project Structure
 
-There are two main folders in this repository:
+```text
+100-Days-of-KQL/
+├── days/                # Daily challenge queries, notes, and prompt files
+├── samples/             # Sample telemetry and CSV datasets
+├── schemas/             # Local KQL table schema definitions
+├── scripts/             # Automation, MCP server, and helper utilities
+├── docker/              # Jupyter, Caddy, and Kustainer container assets
+├── templates/           # Starter templates for new day files
+├── docker-compose.yml   # Local lab environment definition
+├── Makefile             # Common setup and workflow commands
+└── README.md            # Project documentation and update log
+```
 
-- `samples`: holds the sample data used by the KQL queries. Microsoft has a great repository with a comprehensive list of sample log [here](https://github.com/Azure/Azure-Sentinel/tree/master/Sample%20Data).
-- `days`: holds the KQL queries created each day.
+The repository is organized into a few main areas:
+
+- `days`: daily KQL challenge content, including the query files, notes, and prompt files used for AI-assisted query generation on later days.
+- `samples`: sample telemetry and CSV data used by the KQL queries. Microsoft has a great repository with a comprehensive list of sample log [here](https://github.com/Azure/Azure-Sentinel/tree/master/Sample%20Data).
+- `schemas`: local table schema definitions used by the MCP-based query generation workflow.
+- `scripts`: helper utilities and automation, including CSV datetime normalization, the AI-powered KQL query generator, the local MCP server entrypoint, and prompt/configuration files.
+- `docker`: container-specific assets for the local lab environment, including Jupyter, Caddy, and Kustainer-related files.
+- `templates`: starter templates used when creating new day files.
+
+Supporting files at the repository root include:
+
+- `docker-compose.yml`: defines the local lab environment.
+- `Makefile`: provides shortcuts for common setup and workflow commands.
+- `README.md`: project documentation and update log.
 
 # Setup
 
