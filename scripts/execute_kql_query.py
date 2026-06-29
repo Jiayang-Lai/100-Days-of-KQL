@@ -87,6 +87,9 @@ def build_default_query(table_name: str, limit: int) -> str:
   if not is_valid_kusto_table_name(table_name):
     raise ValueError(f"Invalid Kusto table name: {table_name}")
 
+  if limit == -1:
+    return table_name
+
   return f"{table_name} | take {limit}"
 
 
@@ -306,37 +309,58 @@ def main() -> None:
   )
   parser.add_argument(
     "--table",
-    help="Table name to query. If provided without --query, uses '<table> | take N'.",
+    help=(
+      "Table name to use when the script needs one explicitly. Required for "
+      "--schema-dump. Optional for query execution, where it is only used if "
+      "--query is omitted and the script must generate a query for you."
+    ),
   )
   parser.add_argument(
     "--query",
-    help="Raw KQL query to execute. Takes precedence over --table.",
+    help=(
+      "Raw KQL query to execute as-is. If you provide this, you usually do not "
+      "need --table because the table reference should already be inside the query. "
+      "--limit is ignored when --query is used."
+    ),
   )
   parser.add_argument(
     "--limit",
     type=int,
     default=10,
-    help="Row limit for the generated table query (default: 10).",
+    help=(
+      "Only used when the script generates a query from --table because --query "
+      "was not provided (default: 10). Use -1 to generate just '<table>' with "
+      "no '| take ...'. Ignored when --query is provided."
+    ),
   )
   parser.add_argument(
     "--database",
     default=DEFAULT_DATABASE,
-    help=f"Kusto database name (default: {DEFAULT_DATABASE}).",
+    help=(
+      f"Kusto database to run the query or schema lookup against "
+      f"(default: {DEFAULT_DATABASE})."
+    ),
   )
   parser.add_argument(
     "--uri",
     default=DEFAULT_KUSTO_URI,
-    help=f"Kusto endpoint URI (default: {DEFAULT_KUSTO_URI}).",
+    help=f"Kusto engine endpoint URI (default: {DEFAULT_KUSTO_URI}).",
   )
   parser.add_argument(
     "--query-now",
     dest="query_now",
-    help="Optional ISO-8601 timestamp to set query_now for deterministic runs.",
+    help=(
+      "Optional ISO-8601 timestamp for Kusto's query_now setting. Useful when "
+      "you want deterministic results from time-based queries."
+    ),
   )
   parser.add_argument(
     "--schema-dump",
     action="store_true",
-    help="Dump the specified table schema as JSON following schemas/files/table.json.",
+    help=(
+      "Return the specified table schema as JSON in the local "
+      "schemas/files/table.json-compatible format. Requires --table."
+    ),
   )
   args = parser.parse_args()
 
