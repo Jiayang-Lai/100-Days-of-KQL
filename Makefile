@@ -1,5 +1,5 @@
 ## Makefile for managing Docker containers and Python tooling
-.PHONY: help up down lint lint-fix convert list-targets format new-day-% next-day n install-experimental-packages i install trust ai-time-%
+.PHONY: help up down lint lint-fix convert list-targets format new-day-% next-day n install-experimental-packages i install trust ai-time-% anthropic-models anthropic-models-simple
 
 help: ## Show help message
 	@grep -E '^[a-zA-Z0-9_%\-]+:\s*##' $(MAKEFILE_LIST) | sed 's/:.*##\s*/: /'
@@ -54,3 +54,15 @@ i: install-experimental-packages ## alias for install-experimental-packages
 
 ai-time-%: ## Run the AI time script to generate KQL query based on the prompt of the specified day
 	uv run python scripts/generate_kql_query.py --prompt-file days/day-$*.prompt.md
+
+anthropic-models: ## List available Anthropic models via the API using curl
+	@if [ -z "$$ANTHROPIC_API_KEY" ]; then echo "Error: ANTHROPIC_API_KEY is not set"; exit 1; fi
+	curl -sS https://api.anthropic.com/v1/models \
+		-H "x-api-key: $$ANTHROPIC_API_KEY" \
+		-H "anthropic-version: 2023-06-01" | jq
+
+anthropic-models-simple: ## List available Anthropic models with a simplified jq projection
+	@if [ -z "$$ANTHROPIC_API_KEY" ]; then echo "Error: ANTHROPIC_API_KEY is not set"; exit 1; fi
+	curl -sS https://api.anthropic.com/v1/models \
+		-H "x-api-key: $$ANTHROPIC_API_KEY" \
+		-H "anthropic-version: 2023-06-01" | jq '.data | map({type, id, display_name, created_at, legacy: (.id | startswith("claude-2") or startswith("claude-instant")), aliases: (.aliases // []), context_window: (.context_window // null), max_output_tokens: (.max_output_tokens // null)})'
