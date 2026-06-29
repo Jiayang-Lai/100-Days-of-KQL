@@ -199,6 +199,24 @@ make install-experimental-packages
 # uv pip install ../kusto-mcp/dist/kusto_mcp-0.1.0-py3-none-any.whl
 ```
 
+# 2026-06-29 Update
+
+## execute_kql_query.py
+
+Added a minimal query execution harness for the local Kustainer instance.
+
+**Usage:**
+```bash
+# Run a generated table query
+uv run python scripts/execute_kql_query.py --table Table_0
+
+# Run raw KQL directly
+uv run python scripts/execute_kql_query.py --query 'print banner=strcat("Hello", ", ", "World!")'
+
+# Dump a table schema in the local table.json-compatible format
+uv run python scripts/execute_kql_query.py --schema-dump --table Table_0
+```
+
 # 2026-04-19 Update
 
 ## Summary of changes
