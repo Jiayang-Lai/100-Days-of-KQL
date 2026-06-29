@@ -40,7 +40,7 @@ Instead of relying on Actual Sentinel instance or Azure Data Explorer, this proj
 
 I have created a docker compose file based on the one from [Tao of Mac](https://taoofmac.com/space/blog/2024/06/28/2100) (thank you Taoofmac!), with the only change of using a minimal Jupyter notebook image rather than the PyTorch one.
 
-To set up the local environment, simply run command `make up trust` (please make sure you have make installed), the Kustainer uses a volume for persistent storage, but you have to manually load the data after each restart or new Kustainer container creation.
+To set up the local environment, first install the Python tooling with `make install` (this uses `uv` and creates a repo-local `.venv`), then run `make up trust`. The Kustainer uses a volume for persistent storage, but you have to manually load the data after each restart or new Kustainer container creation.
 
 After the environment is up and running, run command `docker logs <your Jupyter container id>` to get the access URL with token. Then follow this [guide](https://learn.microsoft.com/en-us/azure-data-studio/notebooks/notebooks-kqlmagic) to install KqlMagic extension for Jupyter notebook. Here is the command (from Tao of Mac) to install KqlMagic and activate it:
 
@@ -96,10 +96,10 @@ Added a utility script `scripts/convert_utc_columns.py` to process CSV files wit
 **Usage:**
 ```bash
 # Convert with output file
-python3 scripts/convert_utc_columns.py samples/input.csv -o samples/output.csv
+uv run python scripts/convert_utc_columns.py samples/input.csv -o samples/output.csv
 
 # Convert in-place (prompts for confirmation)
-python3 scripts/convert_utc_columns.py samples/input.csv
+uv run python scripts/convert_utc_columns.py samples/input.csv
 ```
 
 **Features:**
@@ -125,25 +125,25 @@ Added an AI-powered KQL query generator that uses an LLM agent with Kusto MCP (M
 **Usage:**
 ```bash
 # Single query mode - outputs structured JSON to stdout
-python scripts/generate_kql_query.py "get devices that reached out to 1.1.1.1"
+uv run python scripts/generate_kql_query.py "get devices that reached out to 1.1.1.1"
 
 # With verbose AI reasoning output
-python scripts/generate_kql_query.py -v "get 10 windows VMs"
+uv run python scripts/generate_kql_query.py -v "get 10 windows VMs"
 
 # Interactive mode
-python scripts/generate_kql_query.py
+uv run python scripts/generate_kql_query.py
 
 # List available tables
-python scripts/generate_kql_query.py --list-tables
+uv run python scripts/generate_kql_query.py --list-tables
 ```
 
 Additional usage:
 
 ```bash
 # Read the prompt/request from a file (takes precedence over the positional query)
-python scripts/generate_kql_query.py --prompt-file days/day-25.prompt.md
+uv run python scripts/generate_kql_query.py --prompt-file days/day-25.prompt.md
 # Short flag
-python scripts/generate_kql_query.py -p days/day-25.prompt.md
+uv run python scripts/generate_kql_query.py -p days/day-25.prompt.md
 ```
 
 Notes:
@@ -177,7 +177,7 @@ The script returns a `KQLQueryResult` Pydantic model with the following fields:
 
 **Installing kusto-mcp:**
 
-The `kusto-mcp` package is now published to PyPI, so by simply running `make install` the package will be installed.
+The `kusto-mcp` package is now published to PyPI, so by simply running `make install` the package will be installed into the `uv`-managed `.venv`.
 
 But if you still wish to build the package locally from the sibling [kusto-mcp](https://github.com/Jiayang-Lai/kusto-mcp) repository here is the snippet to do so:
 
@@ -196,7 +196,7 @@ uv build
 cd ../100-Days-of-KQL
 make install-experimental-packages
 # or manually:
-# pip install ../kusto-mcp/dist/kusto_mcp-0.1.0-py3-none-any.whl
+# uv pip install ../kusto-mcp/dist/kusto_mcp-0.1.0-py3-none-any.whl
 ```
 
 # 2026-04-19 Update

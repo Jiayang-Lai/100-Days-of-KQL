@@ -10,6 +10,7 @@ import argparse
 import asyncio
 import sys
 from pathlib import Path
+from typing import Any, TypedDict, cast
 
 from dotenv import load_dotenv
 from fastmcp import Client
@@ -30,7 +31,7 @@ SYSTEM_PROMPT_PATH = Path(__file__).parent / "system_prompt.md"
 configure_loader(FileSchemaLoader(schemas_dir=SCHEMAS_DIR))
 
 # Load system prompt from markdown file
-SYSTEM_PROMPT = SYSTEM_PROMPT_PATH.read_text()
+SYSTEM_PROMPT = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 
 
 class KQLQueryResult(BaseModel):
@@ -40,6 +41,37 @@ class KQLQueryResult(BaseModel):
   queries: list[str]
   explanation: str
   tables_used: list[str]
+
+
+class TextBlock(TypedDict):
+  """Typed text content block returned by the model."""
+
+  type: str
+  text: str
+
+
+class ToolUseBlock(TypedDict, total=False):
+  """Typed tool-use content block returned by the model."""
+
+  type: str
+  name: str
+  input: dict[str, Any]
+
+
+class AgentResponse(TypedDict):
+  """Subset of the agent response used by this script."""
+
+  messages: list[Any]
+  structured_response: KQLQueryResult
+
+
+class Args(argparse.Namespace):
+  """Command-line arguments for this script."""
+
+  query: str | None
+  list_tables: bool
+  verbose: bool
+  prompt_file: Path | None
 
 
 async def run_agent(user_request: str, verbose: bool = False) -> KQLQueryResult:
@@ -52,7 +84,12 @@ async def run_agent(user_request: str, verbose: bool = False) -> KQLQueryResult:
   Returns:
     KQLQueryResult with query, explanation, and metadata.
   """
-  model = ChatAnthropic(model="claude-haiku-4-5-20251001")
+  model = ChatAnthropic(
+    model_name="claude-haiku-4-5-20251001",
+    timeout=60,
+    max_retries=3,
+    stop=None,
+  )
 
   # Connect to the MCP server and load tools
   client = MultiServerMCPClient(
@@ -76,7 +113,7 @@ async def run_agent(user_request: str, verbose: bool = False) -> KQLQueryResult:
     HumanMessage(content=user_request),
   ]
 
-  result = await agent.ainvoke({"messages": messages})
+  result = cast(AgentResponse, await agent.ainvoke({"messages": messages}))
 
   # Track token usage
   total_input_tokens = 0
@@ -91,11 +128,17 @@ async def run_agent(user_request: str, verbose: bool = False) -> KQLQueryResult:
           print(content, file=sys.stderr)
         elif isinstance(content, list):
           for block in content:
-            if block.get("type") == "text":
-              print(block["text"], file=sys.stderr)
-            elif block.get("type") == "tool_use":
-              tool_name = block.get("name", "unknown")
-              tool_input = block.get("input", {})
+            if not isinstance(block, dict):
+              continue
+
+            block_type = block.get("type")
+            if block_type == "text":
+              text_block = cast(TextBlock, block)
+              print(text_block["text"], file=sys.stderr)
+            elif block_type == "tool_use":
+              tool_block = cast(ToolUseBlock, block)
+              tool_name = tool_block.get("name", "unknown")
+              tool_input = tool_block.get("input", {})
               print(f"[Tool Call: {tool_name}({tool_input})]", file=sys.stderr)
 
       # Aggregate token usage from response metadata
@@ -113,7 +156,7 @@ async def run_agent(user_request: str, verbose: bool = False) -> KQLQueryResult:
   return result["structured_response"]
 
 
-async def async_main(args: argparse.Namespace) -> None:
+async def async_main(args: Args) -> None:
   """Async main entry point."""
   if args.list_tables:
     # Quick mode: just list tables
@@ -185,17 +228,19 @@ def main() -> None:
     type=Path,
     help="Read the prompt/request from a file and use it as the query",
   )
-  args = parser.parse_args()
+  args = parser.parse_args(namespace=Args())
 
   # If a prompt file was provided, read it and use its contents as the query.
-  if getattr(args, "prompt_file", None):
+  if args.prompt_file is not None:
     try:
-      if not args.prompt_file.exists():
-        print(f"Prompt file not found: {args.prompt_file}", file=sys.stderr)
+      prompt_file = args.prompt_file
+
+      if not prompt_file.exists():
+        print(f"Prompt file not found: {prompt_file}", file=sys.stderr)
         sys.exit(2)
-      prompt_text = args.prompt_file.read_text(encoding="utf-8").strip()
+      prompt_text = prompt_file.read_text(encoding="utf-8").strip()
       if not prompt_text:
-        print(f"Prompt file is empty: {args.prompt_file}", file=sys.stderr)
+        print(f"Prompt file is empty: {prompt_file}", file=sys.stderr)
         sys.exit(2)
       # Prompt file takes precedence over positional query argument
       args.query = prompt_text

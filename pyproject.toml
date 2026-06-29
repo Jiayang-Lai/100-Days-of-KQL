@@ -1,0 +1,45 @@
+[project]
+name = "100-days-of-kql"
+version = "0.1.0"
+description = "Local KQL practice environment, utilities, and agent tooling."
+requires-python = ">=3.12"
+dependencies = [
+  "pandas==3.0.0",
+  "langchain==1.2.15",
+  "langchain-anthropic==1.4.0",
+  "python-dotenv==1.2.2",
+  "langchain-mcp-adapters==0.2.2",
+  "pydantic==2.12.5",
+  "kusto-mcp==0.1.1",
+  "azure-kusto-data==6.0.4",
+]
+
+[dependency-groups]
+dev = [
+  "ruff==0.14.14",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 88
+indent-width = 2
+
+[tool.ruff.lint]
+select = [
+  "F",
+  "UP",
+  "B",
+  "SIM",
+  "I",
+  "E",
+  "W",
+  "D",
+  "D401",
+  "D417",
+  "Q",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

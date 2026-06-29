@@ -1,4 +1,4 @@
-## Makefile for managing Docker containers and scripts
+## Makefile for managing Docker containers and Python tooling
 .PHONY: help up down lint lint-fix convert list-targets format new-day-% next-day n install-experimental-packages i install trust ai-time-%
 
 help: ## Show help message
@@ -14,17 +14,17 @@ trust: ## Get the generated local CA certificate from caddy and add it to the Ku
 down: ## Stop the Docker containers
 	docker compose -f docker-compose.yml down
 
-format: ## Format the code using black
-	ruff format --config ./scripts/pyproject.toml
+format: ## Format the code using ruff
+	uv run ruff format
 
 lint: ## Run ruff linter on the scripts
-	ruff check --config ./scripts/pyproject.toml
+	uv run ruff check
 
 lint-fix: ## Run ruff linter with auto-fix on the scripts
-	ruff check --fix --config ./scripts/pyproject.toml
+	uv run ruff check --fix
 
 convert: ## Convert UTC columns in the input file and save to the output file
-	python3 ./scripts/convert_utc_columns.py $(input_file) -o $(output_file)
+	uv run python ./scripts/convert_utc_columns.py $(input_file) -o $(output_file)
 
 new-day-%: ## Create new day markdown and KQL files (make new-day-<number>)
 	@if [ -f "days/day-$*.md" ] || [ -f "days/day-$*.kql" ]; then echo "Error: day-$* already exists"; exit 1; fi
@@ -42,15 +42,15 @@ next-day: ## Create next day files (auto-detects the next day number)
 
 n: next-day ##alias next-day
 
-install: ## Install required packages for development
-	pip install -r ./scripts/requirements.txt
+install: ## Create/update the uv-managed virtual environment with dev tools
+	uv sync --dev
 
 install-experimental-packages: ## Install experimental packages (for testing purposes)
-	pip uninstall kusto-mcp -y
-	pip install ../kusto-mcp/dist/kusto_mcp-*-py3-none-any.whl
+	uv sync --dev
+	uv pip uninstall kusto-mcp -y
+	uv pip install ../kusto-mcp/dist/kusto_mcp-*-py3-none-any.whl
 
 i: install-experimental-packages ## alias for install-experimental-packages
 
 ai-time-%: ## Run the AI time script to generate KQL query based on the prompt of the specified day
-	python scripts/generate_kql_query.py --prompt-file days/day-$*.prompt.md
-
+	uv run python scripts/generate_kql_query.py --prompt-file days/day-$*.prompt.md
