@@ -102,9 +102,7 @@ class Args(argparse.Namespace):
 
 def sanitize_path_component(value: str) -> str:
   """Convert a user-facing name into a filesystem-safe path component."""
-  sanitized = "".join(
-    char.lower() if char.isalnum() else "-" for char in value.strip()
-  )
+  sanitized = "".join(char.lower() if char.isalnum() else "-" for char in value.strip())
   sanitized = "-".join(part for part in sanitized.split("-") if part)
   return sanitized or "mock-logs"
 
@@ -209,9 +207,7 @@ def write_table_csv(table: MockLogTable, output_path: Path) -> None:
     writer = csv.DictWriter(file_handle, fieldnames=columns)
     writer.writeheader()
     for row in table.rows:
-      writer.writerow(
-        {column: csv_safe_value(row.get(column)) for column in columns}
-      )
+      writer.writerow({column: csv_safe_value(row.get(column)) for column in columns})
 
 
 def write_output_bundle(
@@ -479,10 +475,7 @@ def main() -> None:
   parser.add_argument(
     "--model-provider",
     default=DEFAULT_MODEL_PROVIDER,
-    help=(
-      "Model provider to use for the agent "
-      f"(default: {DEFAULT_MODEL_PROVIDER})"
-    ),
+    help=f"Model provider to use for the agent (default: {DEFAULT_MODEL_PROVIDER})",
   )
   parser.add_argument(
     "--model",
@@ -501,8 +494,7 @@ def main() -> None:
   parser.add_argument(
     "--output-name",
     help=(
-      "Optional folder name for the generated bundle under "
-      "samples/generated_mock_logs"
+      "Optional folder name for the generated bundle under samples/generated_mock_logs"
     ),
   )
   parser.add_argument(

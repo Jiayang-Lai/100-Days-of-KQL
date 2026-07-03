@@ -137,8 +137,7 @@ def extract_result_row(result_table: Any, row_index: int = 0) -> dict[str, Any]:
   """Extract a result row as a column-name keyed dictionary."""
   row = result_table[row_index]
   return {
-    column.column_name: row[index]
-    for index, column in enumerate(result_table.columns)
+    column.column_name: row[index] for index, column in enumerate(result_table.columns)
   }
 
 
@@ -161,10 +160,7 @@ def build_schema_dump(
     raise ValueError(f"Invalid Kusto table name: {table_name}")
 
   local_schema = load_local_table_schema(table_name) or {}
-  local_columns = {
-    column["name"]: column
-    for column in local_schema.get("columns", [])
-  }
+  local_columns = {column["name"]: column for column in local_schema.get("columns", [])}
 
   schema_query = f".show table {table_name} schema as json"
   with build_kusto_client(uri) as client:
@@ -248,8 +244,7 @@ def build_schema_dump(
 def result_table_to_schema(result_table: Any) -> dict[str, str]:
   """Convert a Kusto result table schema into a name-to-type mapping."""
   return {
-    column.column_name: str(column.column_type)
-    for column in result_table.columns
+    column.column_name: str(column.column_type) for column in result_table.columns
   }
 
 
@@ -308,10 +303,7 @@ def print_query_execution_summary(result: QueryExecutionResult) -> None:
   """Print an aggregated summary of query execution results to stderr."""
   total_rows = sum(table.row_count for table in result.tables)
   APP_LOGGER.info(
-    (
-      f"[Execution Summary] {len(result.tables)} table(s), "
-      f"{total_rows} total row(s)"
-    ),
+    (f"[Execution Summary] {len(result.tables)} table(s), {total_rows} total row(s)"),
     stderr=True,
   )
 
@@ -322,10 +314,7 @@ def print_query_execution_summary(result: QueryExecutionResult) -> None:
       preview_columns = f"{preview_columns}, ..."
 
     APP_LOGGER.info(
-      (
-        f"  Table {index}: {table.row_count} row(s), "
-        f"{len(column_names)} column(s)"
-      ),
+      (f"  Table {index}: {table.row_count} row(s), {len(column_names)} column(s)"),
       stderr=True,
     )
     if preview_columns:

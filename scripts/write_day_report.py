@@ -100,7 +100,7 @@ class LoopIterationRecord(BaseModel):
   request: str
   generated_queries: list[str]
   kql_generation_token_usage: TokenUsage | None = None
-  candidate_executions: list["QueryCandidateExecution"] = Field(default_factory=list)
+  candidate_executions: list[QueryCandidateExecution] = Field(default_factory=list)
   evaluation: IterationEvaluationResult
 
 
@@ -335,8 +335,7 @@ def parse_args() -> DayReportArgs:
     "--prompt-output",
     type=Path,
     help=(
-      "Output path for the generated prompt file. Defaults to "
-      "days/day-<n>.prompt.md."
+      "Output path for the generated prompt file. Defaults to days/day-<n>.prompt.md."
     ),
   )
   parser.add_argument(
@@ -358,8 +357,7 @@ def parse_args() -> DayReportArgs:
     "--embed-prompt",
     action="store_true",
     help=(
-      "Embed prompt contents in the report instead of only linking to the "
-      "prompt file."
+      "Embed prompt contents in the report instead of only linking to the prompt file."
     ),
   )
   parser.add_argument(
@@ -712,9 +710,7 @@ def render_attempt_overview(iteration: LoopIterationRecord) -> str:
     candidate for candidate in iteration.candidate_executions if candidate.success
   ]
 
-  parts = [
-    f"This attempt generated {candidate_count} query candidate(s)"
-  ]
+  parts = [f"This attempt generated {candidate_count} query candidate(s)"]
   if execution_count:
     parts.append(f"and executed {execution_count} candidate(s)")
   sentence = " ".join(parts) + "."
@@ -743,10 +739,7 @@ def render_candidate_results(iteration: LoopIterationRecord) -> str:
   for candidate in iteration.candidate_executions:
     if candidate.success:
       lines.append(
-        (
-          f"- Candidate {candidate.candidate_index} executed successfully and "
-          f"returned {candidate.total_rows} row(s)."
-        )
+        f"- Candidate {candidate.candidate_index} executed successfully and returned {candidate.total_rows} row(s)."  # noqa: E501
       )
     else:
       error_text = shorten_text(candidate.error or "Execution failed.")
@@ -895,9 +888,7 @@ def parse_link_argument(value: str) -> tuple[str, str]:
   label = label.strip()
   url = url.strip()
   if not label or not url:
-    raise ValueError(
-      f"Invalid --link value '{value}'. Expected a URL or 'Label|URL'."
-    )
+    raise ValueError(f"Invalid --link value '{value}'. Expected a URL or 'Label|URL'.")
   return label, url
 
 

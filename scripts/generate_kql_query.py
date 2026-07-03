@@ -208,10 +208,7 @@ def main() -> None:
   parser.add_argument(
     "--model-provider",
     default=DEFAULT_MODEL_PROVIDER,
-    help=(
-      "Model provider to use for the agent "
-      f"(default: {DEFAULT_MODEL_PROVIDER})"
-    ),
+    help=f"Model provider to use for the agent (default: {DEFAULT_MODEL_PROVIDER})",
   )
   parser.add_argument(
     "--model",

@@ -61,9 +61,7 @@ TABLE_SELECTION_PROMPT_PATH = (
 EVALUATION_PROMPT_PATH = (
   Path(__file__).parent / "prompts" / "agent_loop_evaluation.prompt.md"
 )
-TABLE_SELECTION_SYSTEM_PROMPT = TABLE_SELECTION_PROMPT_PATH.read_text(
-  encoding="utf-8"
-)
+TABLE_SELECTION_SYSTEM_PROMPT = TABLE_SELECTION_PROMPT_PATH.read_text(encoding="utf-8")
 EVALUATION_SYSTEM_PROMPT = EVALUATION_PROMPT_PATH.read_text(encoding="utf-8")
 MCP_SERVER_CONFIG: dict[str, Connection] = {
   "kusto tables": {
@@ -460,9 +458,13 @@ def infer_query_now(mock_result: MockLogResult) -> str | None:
   if latest_timestamp is None:
     return None
 
-  return (latest_timestamp + timedelta(minutes=1)).isoformat().replace(
-    "+00:00",
-    "Z",
+  return (
+    (latest_timestamp + timedelta(minutes=1))
+    .isoformat()
+    .replace(
+      "+00:00",
+      "Z",
+    )
   )
 
 
@@ -628,8 +630,7 @@ async def run_iteration_evaluator(
     "tables_used": query_result.tables_used,
     "mock_log_summary": summarize_mock_logs(mock_result),
     "candidate_executions": [
-      summarize_execution_result(candidate)
-      for candidate in candidate_executions
+      summarize_execution_result(candidate) for candidate in candidate_executions
     ],
     "prior_feedback": prior_feedback,
   }
@@ -878,9 +879,8 @@ async def async_main(args: Args) -> None:
       criteria_met = True
       final_iteration = iteration
       final_query_index = evaluation.best_query_index
-      if (
-        final_query_index is not None
-        and 1 <= final_query_index <= len(kql_result.queries)
+      if final_query_index is not None and 1 <= final_query_index <= len(
+        kql_result.queries
       ):
         final_query = kql_result.queries[final_query_index - 1]
       elif kql_result.queries:
@@ -1000,8 +1000,7 @@ def main() -> None:
     "--model-provider",
     default=DEFAULT_MODEL_PROVIDER,
     help=(
-      "Model provider to use for all loop stages "
-      f"(default: {DEFAULT_MODEL_PROVIDER})"
+      f"Model provider to use for all loop stages (default: {DEFAULT_MODEL_PROVIDER})"
     ),
   )
   parser.add_argument(
