@@ -25,7 +25,7 @@ load_dotenv()
 
 # Schema directory relative to this script
 SCHEMAS_DIR = Path(__file__).parent.parent / "schemas" / "tables"
-SYSTEM_PROMPT_PATH = Path(__file__).parent / "system_prompt.md"
+SYSTEM_PROMPT_PATH = Path(__file__).parent / "prompts" / "kql_query.prompt.md"
 
 # Configure the MCP server to use our local schema directory
 configure_loader(FileSchemaLoader(schemas_dir=SCHEMAS_DIR))
