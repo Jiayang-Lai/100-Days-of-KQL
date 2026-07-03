@@ -11,8 +11,6 @@ configure_logging(level="WARNING")
 
 # Schema directory relative to this script
 SCHEMAS_DIR = Path(__file__).parent.parent / "schemas" / "tables"
-SYSTEM_PROMPT_PATH = Path(__file__).parent / "system_prompt.md"
-
 # Configure the MCP server to use our local schema directory
 configure_loader(FileSchemaLoader(schemas_dir=SCHEMAS_DIR))
 

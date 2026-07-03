@@ -16,9 +16,13 @@ from dotenv import load_dotenv
 from fastmcp import Client
 from kusto_mcp import FileSchemaLoader, configure_loader, mcp
 from langchain.agents import create_agent
-from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
+from model_factory import (
+  DEFAULT_MODEL_NAME,
+  DEFAULT_MODEL_PROVIDER,
+  create_chat_model,
+)
 from pydantic import BaseModel
 
 load_dotenv()
@@ -70,26 +74,31 @@ class Args(argparse.Namespace):
 
   query: str | None
   list_tables: bool
+  model: str
+  model_provider: str
   verbose: bool
   prompt_file: Path | None
 
 
-async def run_agent(user_request: str, verbose: bool = False) -> KQLQueryResult:
+async def run_agent(
+  user_request: str,
+  *,
+  model_provider: str,
+  model_name: str,
+  verbose: bool = False,
+) -> KQLQueryResult:
   """Run the agent to generate a KQL query.
 
   Args:
     user_request: The user's query request
+    model_provider: The LLM vendor/provider to use
+    model_name: The model identifier within the selected provider
     verbose: If True, print AI messages to stderr
 
   Returns:
     KQLQueryResult with query, explanation, and metadata.
   """
-  model = ChatAnthropic(
-    model_name="claude-haiku-4-5-20251001",
-    timeout=60,
-    max_retries=3,
-    stop=None,
-  )
+  model = create_chat_model(provider=model_provider, model_name=model_name)
 
   # Connect to the MCP server and load tools
   client = MultiServerMCPClient(
@@ -170,7 +179,12 @@ async def async_main(args: Args) -> None:
   if args.query:
     print("Running agent to generate KQL query...", file=sys.stderr)
     try:
-      result = await run_agent(args.query, verbose=args.verbose)
+      result = await run_agent(
+        args.query,
+        model_provider=args.model_provider,
+        model_name=args.model,
+        verbose=args.verbose,
+      )
       print(result.model_dump_json(indent=2))
     except Exception as e:
       print(f"Error: {e}", file=sys.stderr)
@@ -194,7 +208,12 @@ async def async_main(args: Args) -> None:
 
     print("\nRunning agent...", file=sys.stderr)
     try:
-      result = await run_agent(user_input, verbose=True)
+      result = await run_agent(
+        user_input,
+        model_provider=args.model_provider,
+        model_name=args.model,
+        verbose=True,
+      )
       print(f"\n{result.model_dump_json(indent=2)}")
     except Exception as e:
       print(f"Error: {e}", file=sys.stderr)
@@ -214,6 +233,19 @@ def main() -> None:
     "--list-tables",
     action="store_true",
     help="List available tables and exit",
+  )
+  parser.add_argument(
+    "--model-provider",
+    default=DEFAULT_MODEL_PROVIDER,
+    help=(
+      "Model provider to use for the agent "
+      f"(default: {DEFAULT_MODEL_PROVIDER})"
+    ),
+  )
+  parser.add_argument(
+    "--model",
+    default=DEFAULT_MODEL_NAME,
+    help=f"Model name to use for the agent (default: {DEFAULT_MODEL_NAME})",
   )
   parser.add_argument(
     "-v",
