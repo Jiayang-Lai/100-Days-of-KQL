@@ -25,6 +25,7 @@ package = false
 [tool.ruff]
 line-length = 88
 indent-width = 2
+exclude = ["docker/jupyter"]
 
 [tool.ruff.lint]
 select = [

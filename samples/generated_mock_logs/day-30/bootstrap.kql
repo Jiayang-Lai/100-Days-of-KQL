@@ -1,0 +1,68 @@
+let DeviceFileEvents = externaldata(
+    TimeGenerated:datetime,
+    DeviceId:string,
+    DeviceName:string,
+    FileName:string,
+    FolderPath:string,
+    FileSize:long,
+    SHA256:string,
+    ActionType:string,
+    InitiatingProcessFileName:string,
+    InitiatingProcessId:long,
+    InitiatingProcessAccountName:string,
+    InitiatingProcessAccountDomain:string
+)
+["https://caddy/generated_mock_logs/day-30/devicefileevents.csv"]
+with(format="csv", ignoreFirstRecord=true);
+let DeviceProcessEvents = externaldata(
+    TimeGenerated:datetime,
+    DeviceId:string,
+    DeviceName:string,
+    FileName:string,
+    FolderPath:string,
+    ActionType:string,
+    ProcessId:long,
+    ProcessCommandLine:string,
+    ProcessCreationTime:datetime,
+    InitiatingProcessFileName:string,
+    InitiatingProcessId:long,
+    InitiatingProcessAccountName:string,
+    InitiatingProcessAccountDomain:string,
+    AdditionalFields:dynamic
+)
+["https://caddy/generated_mock_logs/day-30/deviceprocessevents.csv"]
+with(format="csv", ignoreFirstRecord=true);
+let DeviceNetworkEvents = externaldata(
+    TimeGenerated:datetime,
+    DeviceId:string,
+    DeviceName:string,
+    InitiatingProcessFileName:string,
+    InitiatingProcessId:long,
+    InitiatingProcessAccountName:string,
+    InitiatingProcessAccountDomain:string,
+    RemoteUrl:string,
+    RemoteIP:string,
+    RemotePort:int,
+    LocalIP:string,
+    LocalPort:int,
+    Protocol:string,
+    ActionType:string
+)
+["https://caddy/generated_mock_logs/day-30/devicenetworkevents.csv"]
+with(format="csv", ignoreFirstRecord=true);
+let DeviceInfo = externaldata(
+    TimeGenerated:datetime,
+    DeviceId:string,
+    DeviceName:string,
+    OSPlatform:string,
+    OSVersion:string,
+    OSBuild:long,
+    OSArchitecture:string,
+    MachineGroup:string,
+    OnboardingStatus:string,
+    SensorHealthState:string,
+    OSDistribution:string,
+    AdditionalFields:dynamic
+)
+["https://caddy/generated_mock_logs/day-30/deviceinfo.csv"]
+with(format="csv", ignoreFirstRecord=true);

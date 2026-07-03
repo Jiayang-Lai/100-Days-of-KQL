@@ -15,3 +15,12 @@ When writing KQL queries:
 - Include comments explaining the query logic
 - Handle common edge cases appropriately
 - The query should not include empty lines
+- Generate as few query candidates as possible
+- Prefer returning a single complete query unless multiple distinct queries are
+  genuinely necessary
+- When multiple relevant tables are involved, prefer combining them into one
+  query with appropriate aggregation patterns such as `union` when that keeps
+  the logic valid and readable
+- If you return multiple query candidates, each item in `queries` must be one
+  complete executable KQL query string, not individual lines or fragments
+- Never split a single query across multiple items in `queries`

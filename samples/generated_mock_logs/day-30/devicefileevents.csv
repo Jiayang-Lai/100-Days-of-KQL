@@ -1,0 +1,4 @@
+TimeGenerated,DeviceId,DeviceName,FileName,FolderPath,FileSize,SHA256,ActionType,InitiatingProcessFileName,InitiatingProcessId,InitiatingProcessAccountName,InitiatingProcessAccountDomain
+2026-04-29T14:32:15.123Z,device-001-dev-laptop,dev-workstation-12.corp.internal,setup.mjs,C:\Users\developer\AppData\Local\npm\node_modules\malicious-package\.vscode,4096,4066781fa830224c8bbcc3aa005a396657f9c8f9016f9a64ad44a9d7f5f45e34,FileCreated,npm.exe,3214,developer,CORP
+2026-04-29T14:35:47.456Z,device-001-dev-laptop,dev-workstation-12.corp.internal,execution.js,C:\Users\developer\AppData\Local\npm\node_modules\malicious-package\.claude,12150784,80a3d2877813968ef847ae73b5eeeb70b9435254e74d7f07d8cf4057f0a710ac,FileCreated,node.exe,3856,developer,CORP
+2026-04-29T14:38:22.789Z,device-002-dev-vm,ubuntu-dev-02.corp.internal,tasks.json,/home/devuser/.vscode,512,6f933d00b7d05678eb43c90963a80b8947c4ae6830182f89df31da9f568fea95,FileModified,setup.mjs,5432,devuser,linux

@@ -11,8 +11,10 @@ import sys
 import warnings
 
 import pandas as pd
+from app_logger import add_log_mode_argument, build_app_logger
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
+APP_LOGGER = build_app_logger("convert_utc_columns")
 
 
 def convert_utc_columns(input_file, output_file=None):
@@ -30,36 +32,36 @@ def convert_utc_columns(input_file, output_file=None):
     utc_columns = [col for col in df.columns if "[UTC]" in col]
 
     if not utc_columns:
-      print(f"No columns with [UTC] found in {input_file}")
+      APP_LOGGER.info(f"No columns with [UTC] found in {input_file}")
       return
 
-    print(f"Found {len(utc_columns)} column(s) with [UTC]:")
+    APP_LOGGER.info(f"Found {len(utc_columns)} column(s) with [UTC]:")
     for col in utc_columns:
-      print(f"  - {col}")
+      APP_LOGGER.info(f"  - {col}")
 
     # Convert each [UTC] column to ISO 8601 format
     for col in utc_columns:
       try:
         # Parse the datetime and convert to ISO 8601
         df[col] = pd.to_datetime(df[col]).dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        print(f"✓ Converted: {col}")
+        APP_LOGGER.info(f"✓ Converted: {col}")
       except Exception as e:
-        print(f"✗ Error converting {col}: {e}")
+        APP_LOGGER.error(f"✗ Error converting {col}: {e}")
 
     # Rename columns to remove [UTC] suffix
     df = rename_utc_columns(df)
-    print("✓ Renamed columns to remove [UTC]")
+    APP_LOGGER.info("✓ Renamed columns to remove [UTC]")
 
     # Save the result
     output_path = output_file if output_file else input_file
     df.to_csv(output_path, index=False)
-    print(f"\n✓ Successfully saved to: {output_path}")
+    APP_LOGGER.info(f"\n✓ Successfully saved to: {output_path}")
 
   except FileNotFoundError:
-    print(f"Error: File not found: {input_file}", file=sys.stderr)
+    APP_LOGGER.error(f"Error: File not found: {input_file}")
     sys.exit(1)
   except Exception as e:
-    print(f"Error: {e}", file=sys.stderr)
+    APP_LOGGER.error(f"Error: {e}")
     sys.exit(1)
 
 
@@ -92,6 +94,7 @@ def main():
   parser = argparse.ArgumentParser(
     description="Convert [UTC] datetime columns to ISO 8601 format"
   )
+  add_log_mode_argument(parser)
   parser.add_argument("input_file", help="Path to input CSV file", type=str)
   parser.add_argument(
     "-o",
@@ -101,6 +104,7 @@ def main():
   )
 
   args = parser.parse_args()
+  APP_LOGGER.set_mode(args.log_mode)
 
   # Confirm if overwriting the input file
   if not args.output:
@@ -110,7 +114,7 @@ def main():
       .lower()
     )
     if response != "y":
-      print("Operation cancelled.")
+      APP_LOGGER.info("Operation cancelled.")
       sys.exit(0)
 
   convert_utc_columns(args.input_file, args.output)

@@ -32,6 +32,12 @@ Supporting files at the repository root include:
 - `Makefile`: provides shortcuts for common setup and workflow commands.
 - `README.md`: project documentation and update log.
 
+Within `days/`, the markdown file types have different roles:
+- `day-X.md`: the human-readable day report / journal entry
+- `day-X.kql`: the final KQL query or exercise content for that day
+- `day-X.prompt.md`: the prompt input used by the AI-assisted query workflow
+- `day-X.source.md`: the source write-up or incident material used to generate a prompt file
+
 # Setup
 
 Instead of relying on Actual Sentinel instance or Azure Data Explorer, this project uses an ADX emulator, aka Kustainer. Please find more information from [Microsoft site](https://learn.microsoft.com/en-us/azure/data-explorer/kusto-emulator-overview). According to Microsoft:
@@ -199,6 +205,15 @@ make install-experimental-packages
 # uv pip install ../kusto-mcp/dist/kusto_mcp-0.1.0-py3-none-any.whl
 ```
 
+# 2026-04-19 Update
+
+## Summary of changes
+
+- **Jupyter notebook persistency & starter notebook**: Jupyter data and sessions are now persisted through the project's Docker volumes so notebooks survive container restarts. A lightweight starter notebook has been added for quick onboarding: [docker/jupyter/workbench.ipynb](docker/jupyter/workbench.ipynb). Use this notebook to quickly connect to the local Kustainer instance and try example queries.
+- **docker compose networking refactor**: The docker compose setup has been refactored to create a dedicated internal network for service-to-service communication. This makes it easier for Kustainer to retrieve data from other local services (for example the local file server) without exposing those services publicly.
+- **Caddy introduced as local file server for Kustainer**: A Caddy container is included and configured to serve mounted files within the same docker network (see [docker/caddy/Caddyfile](docker/caddy/Caddyfile)). Kustainer can now access local sample data and schema files over HTTPS which simplifies testing `externaldata` and related workflows. You can now access the web GUI of the file server [here](https://localhost:4433/).
+- **New Make target: `trust`**: A new make target `trust` was added to streamline enabling TLS-based file retrieval. Run `make trust` to append the Caddy CA certificate into the Kustainer container's trust store so Kustainer trusts the local Caddy HTTPS endpoint. This avoids manual certificate installation and enables secure `https://` access to local files from within the cluster.
+
 # 2026-06-29 Update
 
 ## execute_kql_query.py
@@ -217,14 +232,158 @@ uv run python scripts/execute_kql_query.py --query 'print banner=strcat("Hello",
 uv run python scripts/execute_kql_query.py --schema-dump --table Table_0
 ```
 
-# 2026-04-19 Update
+# 2026-07-03 Update
 
-## Summary of changes
+## generate_mock_logs.py
 
-- **Jupyter notebook persistency & starter notebook**: Jupyter data and sessions are now persisted through the project's Docker volumes so notebooks survive container restarts. A lightweight starter notebook has been added for quick onboarding: [docker/jupyter/workbench.ipynb](docker/jupyter/workbench.ipynb). Use this notebook to quickly connect to the local Kustainer instance and try example queries.
-- **docker compose networking refactor**: The docker compose setup has been refactored to create a dedicated internal network for service-to-service communication. This makes it easier for Kustainer to retrieve data from other local services (for example the local file server) without exposing those services publicly.
-- **Caddy introduced as local file server for Kustainer**: A Caddy container is included and configured to serve mounted files within the same docker network (see [docker/caddy/Caddyfile](docker/caddy/Caddyfile)). Kustainer can now access local sample data and schema files over HTTPS which simplifies testing `externaldata` and related workflows. You can now access the web GUI of the file server [here](https://localhost:4433/).
-- **New Make target: `trust`**: A new make target `trust` was added to streamline enabling TLS-based file retrieval. Run `make trust` to append the Caddy CA certificate into the Kustainer container's trust store so Kustainer trusts the local Caddy HTTPS endpoint. This avoids manual certificate installation and enables secure `https://` access to local files from within the cluster.
+Added a companion mock log generator that uses the same Kusto MCP schema tooling, but instead of producing KQL it produces schema-aligned mock Sentinel rows from IOC context.
+
+**Features:**
+- Accepts repeated `--table` flags to constrain generation, or auto-discovers all MCP tables when omitted
+- Reads IOC context from inline text or a document with `--ioc-file`
+- Uses Kusto MCP schema lookups before generating any rows
+- Returns structured JSON grouped by table for easier downstream conversion
+- Can also write a bundle under `samples/generated_mock_logs` with raw JSON and per-table CSVs
+- Can optionally generate `bootstrap.kql` with `externaldata(...)` statements for the bundle CSVs
+
+**Usage:**
+```bash
+# Generate mock logs from an IOC document
+uv run python scripts/generate_mock_logs.py \
+  --table DeviceNetworkEvents \
+  --table DeviceFileEvents \
+  --table DeviceProcessEvents \
+  --ioc-file days/day-29.prompt.md
+
+# Let the script consider all available MCP tables and pick the suitable ones
+uv run python scripts/generate_mock_logs.py \
+  --ioc-file days/day-29.prompt.md
+
+# Inline IOC text
+uv run python scripts/generate_mock_logs.py \
+  --table DeviceNetworkEvents \
+  --table DeviceFileEvents \
+  "Generate mock logs for a downloader that reaches out to 142.11.206.73 and writes 6202033.ps1"
+
+# Verbose mode with a custom target row count
+uv run python scripts/generate_mock_logs.py \
+  --table DeviceNetworkEvents \
+  --table DeviceFileEvents \
+  --rows-per-table 2 \
+  --ioc-file days/day-29.prompt.md \
+  -v
+
+# Also write Kusto-ready CSVs and the raw JSON response under samples/
+uv run python scripts/generate_mock_logs.py \
+  --table DeviceNetworkEvents \
+  --table DeviceFileEvents \
+  --table DeviceProcessEvents \
+  --ioc-file days/day-29.prompt.md \
+  --write-files \
+  --output-name axios-iocs
+
+# Also generate bootstrap.kql for Kustainer ingestion through Caddy
+uv run python scripts/generate_mock_logs.py \
+  --table DeviceNetworkEvents \
+  --table DeviceFileEvents \
+  --table DeviceProcessEvents \
+  --ioc-file days/day-29.prompt.md \
+  --write-files \
+  --write-bootstrap-kql \
+  --bootstrap-base-url https://caddy \
+  --output-name axios-iocs
+```
+
+Notes:
+- `--ioc-file` takes precedence over inline IOC text.
+- If `--table` is omitted, the script loads all available tables from `kusto-mcp list_tables` and lets the agent choose the relevant ones.
+- The agent may skip allowed tables that do not fit the IOC scenario.
+- The script prints structured JSON to stdout and diagnostics to stderr.
+- `--write-files` creates a folder under `samples/generated_mock_logs` containing `mock_logs.raw.json` plus one CSV per generated table.
+- `--write-bootstrap-kql` adds `bootstrap.kql` to that same folder, pointing at the generated CSVs through the configured base URL.
+
+## run_detection_agent_loop.py
+
+Added an orchestration script that takes a prompt file and runs an end-to-end validation loop:
+- selects relevant tables for the scenario
+- generates mock logs
+- writes a mock-log bundle and `bootstrap.kql`
+- generates KQL query candidates
+- executes those queries against the generated mock data
+- asks an evaluation agent whether the criteria are met or whether the next iteration should refine the request
+
+**Usage:**
+```bash
+uv run python scripts/run_detection_agent_loop.py \
+  days/day-30.prompt.md \
+  --max-iterations 3 \
+  --rows-per-table 3 \
+  --bootstrap-base-url https://caddy
+
+# Reuse an existing mock-log bundle and rerun only the KQL/evaluation loop
+uv run python scripts/run_detection_agent_loop.py \
+  days/day-30.prompt.md \
+  --reuse-mock-log-bundle samples/generated_mock_logs/day-30 \
+  --max-iterations 3
+```
+
+Notes:
+- The script always writes a mock-log bundle because query execution depends on the generated CSV files and bootstrap KQL.
+- If `--reuse-mock-log-bundle` is provided, the script reuses that bundle's `mock_logs.raw.json` and `bootstrap.kql` and skips table selection plus mock-log generation.
+- The final stdout payload is structured JSON summarizing table selection, bundle location, loop iterations, evaluator feedback, and the final accepted query if one is found.
+
+## write_day_report.py
+
+Added a report helper that can automate two adjacent tasks for a new day:
+- generate `day-X.prompt.md` from an initial source document that explains the topic and includes the IOC material
+- generate a `day-X.md` report in the same house style used by the existing day notes
+
+The prompt-generation flow is designed to feed directly into `run_detection_agent_loop.py`. It wraps the source document in a prompt that tells the query-generation workflow to extract IOC values, restore defanged indicators, and compose a complete KQL detection query.
+
+**Usage:**
+```bash
+# Generate only day-X.prompt.md from a source document
+uv run python scripts/write_day_report.py \
+  --day-number 30 \
+  --title "the Browser Syncjacking compromise" \
+  --source-document days/day-30.source.md
+
+# Generate a prompt file at an explicit location
+uv run python scripts/write_day_report.py \
+  --day-number 30 \
+  --title "the mini Shai-Hulud compromise" \
+  --source-document days/day-30.source.md \
+  --prompt-output days/day-30.prompt.md
+
+# Generate a report from a loop result and reference the prompt file
+uv run python scripts/write_day_report.py \
+  --day-number 30 \
+  --title "the Browser Syncjacking compromise" \
+  --note "A short note about the case goes here." \
+  --official-doc-label "Incident write-up" \
+  --official-doc-url "https://example.com/report" \
+  --prompt-file days/day-30.prompt.md \
+  --result-json samples/generated_mock_logs/day-30-prompt/loop_result.json \
+  --output days/day-30.md
+
+# Generate both the prompt file and the report in one run
+uv run python scripts/write_day_report.py \
+  --day-number 30 \
+  --title "the Browser Syncjacking compromise" \
+  --source-document days/day-30.source.md \
+  --note "A short note about the case goes here." \
+  --official-doc-label "Incident write-up" \
+  --official-doc-url "https://example.com/report" \
+  --result-json samples/generated_mock_logs/day-30-prompt/loop_result.json \
+  --output days/day-30.md
+```
+
+Notes:
+- When `--source-document` is provided, the script writes a prompt file to `days/day-X.prompt.md` by default.
+- `--prompt-output` overrides the default prompt destination.
+- `--prompt-prefix` can be used to override the default prompt instructions if a day needs a more specific framing.
+- If you only provide prompt-generation inputs, the script runs in prompt-only mode and does not create a day report.
+- If you also provide report-related inputs such as `--result-json`, `--note`, or `--output`, the script can generate the prompt file and the day report together.
 
 # To-dos
 
@@ -232,8 +391,8 @@ uv run python scripts/execute_kql_query.py --schema-dump --table Table_0
 - [X] Expose local file through another container within the same docker network to enable rapid iteration of test log (compared to committing to remote repository).
   - [X] Use caddy to expose the mounted directory within the docker network.
   - [X] Load custom config (quite sure there would be a container)
-- [ ] Create function for agent to run query against local Kustainer and get return.
-- [ ] Create an agent harness to fully automate the process of generating KQL query.
-  - [ ] Provide system prompt and initial message.
-  - [ ] Provide agent with access to run query within Kustainer.
-  - [ ] Implement loop mechanism to give agent autonomy to generate and improve query to meet requirements.
+- [X] Create function for agent to run query against local Kustainer and get return.
+- [X] Create an agent harness to fully automate the process of generating KQL query.
+  - [X] Provide system prompt and initial message.
+  - [X] Provide agent with access to run query within Kustainer.
+  - [X] Implement loop mechanism to give agent autonomy to generate and improve query to meet requirements.

@@ -1,0 +1,4 @@
+TimeGenerated,DeviceId,DeviceName,OSPlatform,OSVersion,OSBuild,OSArchitecture,MachineGroup,OnboardingStatus,SensorHealthState,OSDistribution,AdditionalFields
+2026-04-29T14:30:00.000Z,device-001-dev-laptop,dev-workstation-12.corp.internal,Windows10,22H2,19045,x64,Development,Onboarded,Active,,
+2026-04-29T14:30:00.000Z,device-002-dev-vm,ubuntu-dev-02.corp.internal,Linux,5.15.0,,x64,Development,Onboarded,Active,Ubuntu,"{""LANG"":""ru_RU.UTF-8"",""LC_ALL"":""ru_RU.UTF-8""}"
+2026-04-29T14:30:00.000Z,device-003-ci-runner,github-actions-runner-03.corp.internal,Windows10,21H2,19044,x64,CI/CD,Onboarded,Active,,

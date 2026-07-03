@@ -12,11 +12,13 @@ import sys
 from pathlib import Path
 from typing import Any, TypedDict, cast
 
+from agent_output import collect_token_usage, print_agent_events
+from app_logger import LogMode, add_log_mode_argument, build_app_logger
 from dotenv import load_dotenv
 from fastmcp import Client
 from kusto_mcp import FileSchemaLoader, configure_loader, mcp
 from langchain.agents import create_agent
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from model_factory import (
   DEFAULT_MODEL_NAME,
@@ -36,6 +38,7 @@ configure_loader(FileSchemaLoader(schemas_dir=SCHEMAS_DIR))
 
 # Load system prompt from markdown file
 SYSTEM_PROMPT = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
+APP_LOGGER = build_app_logger("generate_kql_query")
 
 
 class KQLQueryResult(BaseModel):
@@ -45,21 +48,7 @@ class KQLQueryResult(BaseModel):
   queries: list[str]
   explanation: str
   tables_used: list[str]
-
-
-class TextBlock(TypedDict):
-  """Typed text content block returned by the model."""
-
-  type: str
-  text: str
-
-
-class ToolUseBlock(TypedDict, total=False):
-  """Typed tool-use content block returned by the model."""
-
-  type: str
-  name: str
-  input: dict[str, Any]
+  token_usage: dict[str, int] | None = None
 
 
 class AgentResponse(TypedDict):
@@ -74,6 +63,7 @@ class Args(argparse.Namespace):
 
   query: str | None
   list_tables: bool
+  log_mode: LogMode
   model: str
   model_provider: str
   verbose: bool
@@ -124,36 +114,10 @@ async def run_agent(
 
   result = cast(AgentResponse, await agent.ainvoke({"messages": messages}))
 
-  # Track token usage
-  total_input_tokens = 0
-  total_output_tokens = 0
+  if verbose:
+    print_agent_events(result["messages"], stream=sys.stderr)
 
-  # Print all AI messages from the conversation
-  for msg in result["messages"]:
-    if isinstance(msg, AIMessage):
-      content = msg.content
-      if verbose:
-        if isinstance(content, str):
-          print(content, file=sys.stderr)
-        elif isinstance(content, list):
-          for block in content:
-            if not isinstance(block, dict):
-              continue
-
-            block_type = block.get("type")
-            if block_type == "text":
-              text_block = cast(TextBlock, block)
-              print(text_block["text"], file=sys.stderr)
-            elif block_type == "tool_use":
-              tool_block = cast(ToolUseBlock, block)
-              tool_name = tool_block.get("name", "unknown")
-              tool_input = tool_block.get("input", {})
-              print(f"[Tool Call: {tool_name}({tool_input})]", file=sys.stderr)
-
-      # Aggregate token usage from response metadata
-      if hasattr(msg, "usage_metadata") and msg.usage_metadata:
-        total_input_tokens += msg.usage_metadata.get("input_tokens", 0)
-        total_output_tokens += msg.usage_metadata.get("output_tokens", 0)
+  total_input_tokens, total_output_tokens = collect_token_usage(result["messages"])
 
   # Print token usage summary
   total_tokens = total_input_tokens + total_output_tokens
@@ -161,8 +125,14 @@ async def run_agent(
     f"[Tokens: {total_input_tokens} input + {total_output_tokens} output = "
     f"{total_tokens} total]"
   )
-  print(token_msg, file=sys.stderr)
-  return result["structured_response"]
+  APP_LOGGER.info(token_msg, stderr=True)
+  structured_response = result["structured_response"]
+  structured_response.token_usage = {
+    "input": total_input_tokens,
+    "output": total_output_tokens,
+    "total": total_tokens,
+  }
+  return structured_response
 
 
 async def async_main(args: Args) -> None:
@@ -177,7 +147,7 @@ async def async_main(args: Args) -> None:
 
   # Single query mode - output structured JSON to stdout
   if args.query:
-    print("Running agent to generate KQL query...", file=sys.stderr)
+    APP_LOGGER.info("Running agent to generate KQL query...", stderr=True)
     try:
       result = await run_agent(
         args.query,
@@ -187,12 +157,12 @@ async def async_main(args: Args) -> None:
       )
       print(result.model_dump_json(indent=2))
     except Exception as e:
-      print(f"Error: {e}", file=sys.stderr)
+      APP_LOGGER.error(f"Error: {e}")
       sys.exit(1)
     return
 
   # Interactive mode - verbose output for user
-  print("Enter your query request (or 'quit' to exit):")
+  APP_LOGGER.info("Enter your query request (or 'quit' to exit):")
   while True:
     try:
       user_input = input("\n> ").strip()
@@ -200,13 +170,13 @@ async def async_main(args: Args) -> None:
       break
 
     if user_input.lower() in ("quit", "exit", "q"):
-      print("Goodbye!")
+      APP_LOGGER.info("Goodbye!")
       break
 
     if not user_input:
       continue
 
-    print("\nRunning agent...", file=sys.stderr)
+    APP_LOGGER.info("\nRunning agent...", stderr=True)
     try:
       result = await run_agent(
         user_input,
@@ -216,7 +186,7 @@ async def async_main(args: Args) -> None:
       )
       print(f"\n{result.model_dump_json(indent=2)}")
     except Exception as e:
-      print(f"Error: {e}", file=sys.stderr)
+      APP_LOGGER.error(f"Error: {e}")
 
 
 def main() -> None:
@@ -224,6 +194,7 @@ def main() -> None:
   parser = argparse.ArgumentParser(
     description="Generate KQL queries using an LLM agent with Kusto MCP tools"
   )
+  add_log_mode_argument(parser)
   parser.add_argument(
     "query",
     nargs="?",
@@ -261,6 +232,7 @@ def main() -> None:
     help="Read the prompt/request from a file and use it as the query",
   )
   args = parser.parse_args(namespace=Args())
+  APP_LOGGER.set_mode(args.log_mode)
 
   # If a prompt file was provided, read it and use its contents as the query.
   if args.prompt_file is not None:
@@ -268,16 +240,16 @@ def main() -> None:
       prompt_file = args.prompt_file
 
       if not prompt_file.exists():
-        print(f"Prompt file not found: {prompt_file}", file=sys.stderr)
+        APP_LOGGER.error(f"Prompt file not found: {prompt_file}")
         sys.exit(2)
       prompt_text = prompt_file.read_text(encoding="utf-8").strip()
       if not prompt_text:
-        print(f"Prompt file is empty: {prompt_file}", file=sys.stderr)
+        APP_LOGGER.error(f"Prompt file is empty: {prompt_file}")
         sys.exit(2)
       # Prompt file takes precedence over positional query argument
       args.query = prompt_text
     except Exception as e:
-      print(f"Failed to read prompt file: {e}", file=sys.stderr)
+      APP_LOGGER.error(f"Failed to read prompt file: {e}")
       sys.exit(2)
 
   asyncio.run(async_main(args))

@@ -1,0 +1,4 @@
+TimeGenerated,DeviceId,DeviceName,FileName,FolderPath,ActionType,ProcessId,ProcessCommandLine,ProcessCreationTime,InitiatingProcessFileName,InitiatingProcessId,InitiatingProcessAccountName,InitiatingProcessAccountDomain,AdditionalFields
+2026-04-29T14:36:03.234Z,device-001-dev-laptop,dev-workstation-12.corp.internal,node.exe,C:\Program Files\nodejs,ProcessCreated,3856,node .claude/setup.mjs,2026-04-29T14:36:02.111Z,npm.exe,3214,developer,CORP,"{""LANG"":""ru_RU.UTF-8"",""__DAEMONIZED"":""1""}"
+2026-04-29T14:40:15.567Z,device-003-ci-runner,github-actions-runner-03.corp.internal,bun.exe,C:\hostedtoolcache\windows\bun\1.3.1313\x64,ProcessCreated,4172,bun run .claude/execution.js,2026-04-29T14:40:14.222Z,node.exe,4001,github-actions,CORP,
+2026-04-29T14:45:32.890Z,device-002-dev-vm,ubuntu-dev-02.corp.internal,setup.mjs,/home/devuser/.vscode,ProcessCreated,5433,node .claude/setup.mjs --extract-tokens,2026-04-29T14:45:31.444Z,code,5100,devuser,linux,

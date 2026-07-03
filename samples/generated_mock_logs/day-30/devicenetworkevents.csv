@@ -1,0 +1,4 @@
+TimeGenerated,DeviceId,DeviceName,InitiatingProcessFileName,InitiatingProcessId,InitiatingProcessAccountName,InitiatingProcessAccountDomain,RemoteUrl,RemoteIP,RemotePort,LocalIP,LocalPort,Protocol,ActionType
+2026-04-29T14:41:22.456Z,device-001-dev-laptop,dev-workstation-12.corp.internal,node.exe,3856,developer,CORP,api.github.com/repos/victim-account/sardaukar-sandworm-42,140.82.112.22,443,192.168.1.100,54321,Tcp,ConnectionSuccess
+2026-04-29T14:43:55.789Z,device-003-ci-runner,github-actions-runner-03.corp.internal,bun.exe,4172,github-actions,CORP,registry.npmjs.org,151.101.1.140,443,10.0.1.50,55432,Tcp,ConnectionSuccess
+2026-04-29T14:48:17.012Z,device-002-dev-vm,ubuntu-dev-02.corp.internal,setup.mjs,5433,devuser,linux,api.github.com/repos/compromised-team/mentat-ornithopter-71,140.82.112.22,443,10.0.2.75,56789,Tcp,ConnectionSuccess

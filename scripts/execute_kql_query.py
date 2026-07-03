@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 from typing import Any, Literal, cast
 
+from app_logger import add_log_mode_argument, build_app_logger
 from azure.kusto.data import (
   ClientRequestProperties,
   KustoClient,
@@ -21,6 +22,7 @@ from pydantic import BaseModel
 DEFAULT_KUSTO_URI = "http://localhost:8080"
 DEFAULT_DATABASE = "NetDefaultDB"
 SCHEMAS_DIR = Path(__file__).parent.parent / "schemas" / "tables"
+APP_LOGGER = build_app_logger("execute_kql_query")
 SCHEMA_REFERENCE = (
   "https://github.com/Jiayang-Lai/100-Days-of-KQL/raw/refs/heads/main/"
   "schemas/files/table.json"
@@ -302,11 +304,40 @@ def execute_query(
   )
 
 
+def print_query_execution_summary(result: QueryExecutionResult) -> None:
+  """Print an aggregated summary of query execution results to stderr."""
+  total_rows = sum(table.row_count for table in result.tables)
+  APP_LOGGER.info(
+    (
+      f"[Execution Summary] {len(result.tables)} table(s), "
+      f"{total_rows} total row(s)"
+    ),
+    stderr=True,
+  )
+
+  for index, table in enumerate(result.tables, start=1):
+    column_names = list(table.columns)
+    preview_columns = ", ".join(column_names[:5])
+    if len(column_names) > 5:
+      preview_columns = f"{preview_columns}, ..."
+
+    APP_LOGGER.info(
+      (
+        f"  Table {index}: {table.row_count} row(s), "
+        f"{len(column_names)} column(s)"
+      ),
+      stderr=True,
+    )
+    if preview_columns:
+      APP_LOGGER.info(f"    Columns: {preview_columns}", stderr=True)
+
+
 def main() -> None:
   """Parse arguments and execute a KQL query."""
   parser = argparse.ArgumentParser(
     description="Execute a KQL query against the local Kusto emulator"
   )
+  add_log_mode_argument(parser)
   parser.add_argument(
     "--table",
     help=(
@@ -363,6 +394,7 @@ def main() -> None:
     ),
   )
   args = parser.parse_args()
+  APP_LOGGER.set_mode(args.log_mode)
 
   try:
     if args.schema_dump:
@@ -389,8 +421,11 @@ def main() -> None:
         query_now=args.query_now,
       )
   except Exception as exc:
-    print(f"Error: {exc}", file=sys.stderr)
+    APP_LOGGER.error(f"Error: {exc}")
     sys.exit(1)
+
+  if isinstance(result, QueryExecutionResult):
+    print_query_execution_summary(result)
 
   print(result.model_dump_json(indent=2))
 
