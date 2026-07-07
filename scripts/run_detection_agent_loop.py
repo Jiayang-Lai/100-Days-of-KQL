@@ -47,7 +47,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_mcp_adapters.sessions import Connection
 from model_factory import (
-  DEFAULT_MODEL_NAME,
+  DEFAULT_ANTHROPIC_MODEL,
   DEFAULT_MODEL_PROVIDER,
   create_chat_model,
 )
@@ -1005,8 +1005,8 @@ def main() -> None:
   )
   parser.add_argument(
     "--model",
-    default=DEFAULT_MODEL_NAME,
-    help=f"Model name to use for all loop stages (default: {DEFAULT_MODEL_NAME})",
+    default=DEFAULT_ANTHROPIC_MODEL,
+    help=f"Model name to use for all loop stages (default: {DEFAULT_ANTHROPIC_MODEL})",
   )
   parser.add_argument(
     "-v",

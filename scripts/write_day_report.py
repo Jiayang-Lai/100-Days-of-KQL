@@ -13,7 +13,7 @@ from app_logger import LogMode, add_log_mode_argument, build_app_logger
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from model_factory import (
-  DEFAULT_MODEL_NAME,
+  DEFAULT_ANTHROPIC_MODEL,
   DEFAULT_MODEL_PROVIDER,
   create_chat_model,
 )
@@ -265,10 +265,10 @@ def parse_args() -> DayReportArgs:
   )
   parser.add_argument(
     "--model",
-    default=DEFAULT_MODEL_NAME,
+    default=DEFAULT_ANTHROPIC_MODEL,
     help=(
       "Model name to use for LLM-based prompt generation "
-      f"(default: {DEFAULT_MODEL_NAME})"
+      f"(default: {DEFAULT_ANTHROPIC_MODEL})"
     ),
   )
   parser.add_argument(
