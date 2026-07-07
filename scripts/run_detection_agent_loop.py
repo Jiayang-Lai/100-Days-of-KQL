@@ -1005,7 +1005,6 @@ def main() -> None:
   )
   parser.add_argument(
     "--model",
-    default=DEFAULT_ANTHROPIC_MODEL_NAME,
     help="Model name to use for all loop stages (defaults to per provider default)",
   )
   parser.add_argument(
