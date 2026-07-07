@@ -47,7 +47,6 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_mcp_adapters.sessions import Connection
 from model_factory import (
-  DEFAULT_ANTHROPIC_MODEL_NAME,
   DEFAULT_MODEL_PROVIDER,
   create_chat_model,
 )
