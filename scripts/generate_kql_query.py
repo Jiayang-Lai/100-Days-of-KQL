@@ -21,7 +21,6 @@ from langchain.agents import create_agent
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from model_factory import (
-  DEFAULT_ANTHROPIC_MODEL,
   DEFAULT_MODEL_PROVIDER,
   create_chat_model,
 )
@@ -212,8 +211,7 @@ def main() -> None:
   )
   parser.add_argument(
     "--model",
-    default=DEFAULT_ANTHROPIC_MODEL,
-    help=f"Model name to use for the agent (default: {DEFAULT_ANTHROPIC_MODEL})",
+    help="Model name to use for the agent (defaults to default values per provider)",
   )
   parser.add_argument(
     "-v",
