@@ -8,7 +8,7 @@ up: ## Start the Docker containers in detached mode
 	docker compose -f docker-compose.yml up -d
 
 trust: ## Get the generated local CA certificate from caddy and add it to the Kustainer container's trusted certificates
-	docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt ./docker/kustainer/root.ignore.crt
+	docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt ./docker/kustainer_cert/root.ignore.crt
 	docker exec kusto sh -c "cat /kustainer_cert/root.ignore.crt >> /etc/ssl/certs/ca-certificates.crt"
 
 down: ## Stop the Docker containers

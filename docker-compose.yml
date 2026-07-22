@@ -40,12 +40,17 @@ services:
 
 volumes:
   kustodata:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './docker/kustodata/'
   kustainer_cert:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: './docker/kustainer/'
+      device: './docker/kustainer_cert/'
   caddy_config:
     driver: local
     driver_opts:
