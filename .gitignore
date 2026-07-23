@@ -211,3 +211,4 @@ __marimo__/
 
 # Ignore kqlmagic temp files
 docker/jupyter/kqlmagic
+docker/kustodata/dbs
