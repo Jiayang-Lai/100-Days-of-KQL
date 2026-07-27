@@ -1,5 +1,5 @@
 ## Makefile for managing Docker containers and Python tooling
-.PHONY: help up down lint lint-fix convert list-targets format new-day-% next-day n install-experimental-packages i install trust ai-time-% anthropic-models anthropic-models-simple
+.PHONY: help up p-up trust p-trust down p-down lint lint-fix convert list-targets format new-day-% next-day n install-experimental-packages i install ai-time-% anthropic-models anthropic-models-simple
 
 help: ## Show help message
 	@grep -E '^[a-zA-Z0-9_%\-]+:\s*##' $(MAKEFILE_LIST) | sed 's/:.*##\s*/: /'
@@ -7,12 +7,22 @@ help: ## Show help message
 up: ## Start the Docker containers in detached mode
 	docker compose -f docker-compose.yml up -d
 
+p-up: ## Start the containers using podman compose in detached mode
+	podman-compose -f docker-compose.yml up -d
+
 trust: ## Get the generated local CA certificate from caddy and add it to the Kustainer container's trusted certificates
 	docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt ./docker/kustainer_cert/root.ignore.crt
 	docker exec kusto sh -c "cat /kustainer_cert/root.ignore.crt >> /etc/ssl/certs/ca-certificates.crt"
 
+p-trust: ## Get the generated local CA certificate from caddy and add it to the Kustainer container's trusted certificates using podman
+	podman cp caddy:/data/caddy/pki/authorities/local/root.crt ./docker/kustainer_cert/root.ignore.crt
+	podman exec kusto sh -c "cat /kustainer_cert/root.ignore.crt >> /etc/ssl/certs/ca-certificates.crt"
+
 down: ## Stop the Docker containers
 	docker compose -f docker-compose.yml down
+
+p-down: ## Stop the containers using podman compose
+	podman-compose -f docker-compose.yml down
 
 format: ## Format the code using ruff
 	uv run ruff format

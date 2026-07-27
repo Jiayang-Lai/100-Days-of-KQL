@@ -3,9 +3,17 @@ services:
     container_name: kusto
     hostname: kusto
     image: mcr.microsoft.com/azuredataexplorer/kustainer-linux
-    volumes: 
-      - kustodata:/kustodata
-      - kustainer_cert:/kustainer_cert
+    volumes:
+      - type: bind
+        source: ./docker/kustodata
+        target: /kustodata
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./docker/kustainer_cert
+        target: /kustainer_cert
+        bind:
+          create_host_path: false
     ports:
       - 127.0.0.1:8080:8080
     networks:
@@ -19,7 +27,11 @@ services:
     hostname: jupyter
     image: jupyter/minimal-notebook:x86_64-python-3.11.6
     volumes:
-      - jupyter_data:/home/jovyan/100-days-of-kql
+      - type: bind
+        source: ./docker/jupyter
+        target: /home/jovyan/100-days-of-kql
+        bind:
+          create_host_path: false
     ports:
       - 127.0.0.1:8888:8888
     networks:
@@ -30,45 +42,23 @@ services:
     hostname: localfiles
     image: caddy:2.11.2-alpine
     volumes:
-      - caddy_config:/etc/caddy
-      - caddy_data:/srv
+      - type: bind
+        source: ./docker/caddy
+        target: /etc/caddy
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./samples
+        target: /srv
+        read_only: true
+        bind:
+          create_host_path: false
     ports:
       - 127.0.0.1:4433:443
     networks:
       - kusto_network
     restart: always
-
-volumes:
-  kustodata:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './docker/kustodata/'
-  kustainer_cert:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './docker/kustainer_cert/'
-  caddy_config:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './docker/caddy/'
-  caddy_data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './samples/'
-  jupyter_data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: './docker/jupyter/'
 
 networks:
   kusto_network:
